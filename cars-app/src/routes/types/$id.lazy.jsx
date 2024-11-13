@@ -7,7 +7,7 @@ import { confirmAlert } from "react-confirm-alert";
 import { toast } from "react-toastify";
 import { deleteType, getTypesById } from "../../service/type";
 import { useSelector } from "react-redux";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 
 export const Route = createLazyFileRoute("/types/$id")({
   component: TypeDetail,
@@ -22,7 +22,18 @@ function TypeDetail() {
     queryKey: ["type", id],
     queryFn: () => getTypesById(id),
     enabled: !!id,
-  })
+  });
+
+  const { mutate: deleteTypeData } = useMutation({
+    mutationFn: () => deleteType(id),
+    onSuccess: () => {
+      toast.success("Type deleted");
+      navigate({ to: "/" });
+    },
+    onError: () => {
+      toast.error("Unable to delete");
+    },
+  });
 
   const onDelete = async (event) => {
     event.preventDefault();
@@ -33,15 +44,7 @@ function TypeDetail() {
       buttons: [
         {
           label: "Yes",
-          onClick: async () => {
-            const result = await deleteType(id);
-            if (result?.success) {
-              navigate({ to: "/" });
-              return;
-            }
-
-            toast.error(result?.message);
-          },
+          onClick: () => deleteTypeData(),
         },
         {
           label: "No",
