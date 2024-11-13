@@ -8,6 +8,7 @@ import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import { useMutation } from "@tanstack/react-query";
 
 export const Route = createLazyFileRoute("/types/create")({
   component: () => (
@@ -22,27 +23,20 @@ function CreateType() {
   const [description, setDescription] = useState("");
   const [characteristic, setCharacteristic] = useState("");
   const [style, setStyle] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+
+  const {mutate:createTypeData,isPending} = useMutation({
+    mutationFn:(body)=>createType(body),
+    onSuccess:()=>{
+      toast.success("New type created");
+      navigate({to:"/"});
+    }
+  })
 
   const onSubmit = async (e) => {
     e.preventDefault();
     const request = { name, description, characteristic, style };
-
-    const createTypeData = async () => {
-      setIsLoading(true);
-      const result = await createType(request);
-      if (result.success) {
-        toast.success(result.message);
-        setIsLoading(false);
-        navigate({ to: "/types" });
-        return;
-      }
-      setIsLoading(false);
-      toast.error(result.message);
-    };
-
-    createTypeData();
+    createTypeData(request);
   };
 
   return (
@@ -118,7 +112,7 @@ function CreateType() {
                 </Col>
               </Form.Group>
               <div className="d-grid gap-2">
-                <Button type="submit" variant="primary" disabled={isLoading}>
+                <Button type="submit" variant="primary" disabled={isPending}>
                   Create Type
                 </Button>
               </div>

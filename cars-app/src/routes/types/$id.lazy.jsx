@@ -18,7 +18,7 @@ function TypeDetail() {
   const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
 
-  const { data: type, isLoading, isError } = useQuery({
+  const { data: type, isPending } = useQuery({
     queryKey: ["type", id],
     queryFn: () => getTypesById(id),
     enabled: !!id,
@@ -51,7 +51,7 @@ function TypeDetail() {
     });
   };
 
-  if (isError || !type) {
+  if (isPending) {
     return <h2>Loading...</h2>;
   }
   return (
@@ -71,18 +71,18 @@ function TypeDetail() {
                   <div className="d-grid gap-2">
                     <Button
                       as={Link}
-                      href={`/models/edit/${id}`}
+                      href={`/types/edit/${id}`}
                       variant="primary"
                       size="md"
                     >
-                      Edit Model
+                      Edit Types
                     </Button>
                   </div>
                 </Card.Text>
                 <Card.Text>
                   <div className="d-grid gap-2">
                     <Button onClick={onDelete} variant="danger" size="md">
-                      Delete Model
+                      Delete Types
                     </Button>
                   </div>
                 </Card.Text>
