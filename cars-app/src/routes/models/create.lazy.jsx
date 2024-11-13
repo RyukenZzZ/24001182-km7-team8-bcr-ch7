@@ -1,5 +1,5 @@
 import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import {useState } from "react";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
@@ -9,6 +9,7 @@ import { getManufactures } from "../../service/manufacture";
 import { createModel } from "../../service/model";
 import { toast } from "react-toastify";
 import Protected from "../../components/Auth/Protected";
+import { useQuery,useMutation } from "@tanstack/react-query";
 
 export const Route = createLazyFileRoute("/models/create")({
   component: () => (
@@ -21,20 +22,22 @@ export const Route = createLazyFileRoute("/models/create")({
 function CreateModel() {
   const navigate = useNavigate();
 
+  const {data:manufactures}=useQuery({
+    queryKey:["manufactures"],
+    queryFn:()=>getManufactures()
+  })
+
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [manufactures, setManufactures] = useState([]);
   const [manufactureId, setManufactureId] = useState(0);
 
-  useEffect(() => {
-    const getManufacturesData = async () => {
-      const result = await getManufactures();
-      if (result?.success) {
-        setManufactures(result?.data);
-      }
-    };
-    getManufacturesData();
-  }, []);
+  const {mutate:createModelData,isPending:createPending} = useMutation({
+    mutationFn:(body)=>createModel(body),
+    onSuccess:()=>{
+      toast.success("New model added");
+      navigate({to:"/"}); 
+    }
+  })
 
   const onSubmit = async (event) => {
     event.preventDefault();
@@ -44,13 +47,7 @@ function CreateModel() {
       description,
       manufactureId,
     };
-    const result = await createModel(request);
-    if (result?.success) {
-      navigate({ to: "/" });
-      return;
-    }
-
-    toast.error(result?.message);
+    createModelData(request);
   };
 
   return (
@@ -115,7 +112,7 @@ function CreateModel() {
               </Form.Group>
 
               <div className="d-grid gap-2">
-                <Button type="submit" variant="primary">
+                <Button type="submit" variant="primary" disabled={createPending}>
                   Create Model
                 </Button>
               </div>
