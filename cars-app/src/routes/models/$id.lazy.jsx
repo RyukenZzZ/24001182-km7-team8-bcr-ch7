@@ -7,7 +7,7 @@ import { deleteModel, getDetailModel } from "../../service/model";
 import { toast } from "react-toastify";
 import { confirmAlert } from "react-confirm-alert";
 import { useSelector } from "react-redux";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const Route = createLazyFileRoute("/models/$id")({
   component: ModelDetail,
@@ -18,12 +18,27 @@ function ModelDetail() {
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
 
-  const { data: model, isLoading, isError } = useQuery({
-    queryKey: ['model', id],
+  const {
+    data: model,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["model", id],
     queryFn: () => getDetailModel(id),
     enabled: !!id,
     retry: false,
-  })
+  });
+
+  const { mutate: deleteModelData } = useMutation({
+    mutationFn: () => deleteModel(id),
+    onSuccess: () => {
+      toast.success("Model deleted");
+      navigate({ to: "/" });
+    },
+    onError:()=>{
+      toast.error("Unable to delete")
+    }
+  });
 
   if (isLoading) {
     return (
@@ -54,15 +69,7 @@ function ModelDetail() {
       buttons: [
         {
           label: "Yes",
-          onClick: async () => {
-            const result = await deleteModel(id);
-            if (result?.success) {
-              navigate({ to: "/" });
-              return;
-            }
-
-            toast.error(result?.message);
-          },
+          onClick: ()=>{deleteModelData()},
         },
         {
           label: "No",

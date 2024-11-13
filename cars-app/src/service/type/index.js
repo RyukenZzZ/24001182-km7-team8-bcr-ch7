@@ -38,7 +38,11 @@ export const createType = async (request) => {
     body: formData,
   });
   const result = await res.json();
-  return result;
+  if (!result?.success) {
+    throw new Error(result?.message);
+  }
+
+  return result?.data;
 };
 
 export const updateType = async (id, request) => {
@@ -54,7 +58,11 @@ export const updateType = async (id, request) => {
     body: formData,
   });
   const result = await res.json();
-  return result;
+  if (!result?.success) {
+    throw new Error(result?.message);
+  }
+
+  return result?.data;
 };
 
 export const deleteType = async (id) => {
@@ -64,5 +72,9 @@ export const deleteType = async (id) => {
     method: "DELETE",
   });
   const result = await res.json();
-  return result;
+  if (!result?.success) {
+    throw new Error(result?.message);
+  }
+
+  return result?.data;
 };

@@ -7,7 +7,7 @@ import { confirmAlert } from "react-confirm-alert";
 import { toast } from "react-toastify";
 import { deleteType, getTypesById } from "../../service/type";
 import { useSelector } from "react-redux";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 
 export const Route = createLazyFileRoute("/types/$id")({
   component: TypeDetail,
@@ -18,11 +18,22 @@ function TypeDetail() {
   const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
 
-  const { data: type, isLoading, isError } = useQuery({
+  const { data: type, isPending } = useQuery({
     queryKey: ["type", id],
     queryFn: () => getTypesById(id),
     enabled: !!id,
-  })
+  });
+
+  const { mutate: deleteTypeData } = useMutation({
+    mutationFn: () => deleteType(id),
+    onSuccess: () => {
+      toast.success("Type deleted");
+      navigate({ to: "/" });
+    },
+    onError: () => {
+      toast.error("Unable to delete");
+    },
+  });
 
   const onDelete = async (event) => {
     event.preventDefault();
@@ -33,15 +44,7 @@ function TypeDetail() {
       buttons: [
         {
           label: "Yes",
-          onClick: async () => {
-            const result = await deleteType(id);
-            if (result?.success) {
-              navigate({ to: "/" });
-              return;
-            }
-
-            toast.error(result?.message);
-          },
+          onClick: () => deleteTypeData(),
         },
         {
           label: "No",
@@ -51,7 +54,7 @@ function TypeDetail() {
     });
   };
 
-  if (isError || !type) {
+  if (isPending) {
     return <h2>Loading...</h2>;
   }
   return (
@@ -71,18 +74,18 @@ function TypeDetail() {
                   <div className="d-grid gap-2">
                     <Button
                       as={Link}
-                      href={`/models/edit/${id}`}
+                      href={`/types/edit/${id}`}
                       variant="primary"
                       size="md"
                     >
-                      Edit Model
+                      Edit Types
                     </Button>
                   </div>
                 </Card.Text>
                 <Card.Text>
                   <div className="d-grid gap-2">
                     <Button onClick={onDelete} variant="danger" size="md">
-                      Delete Model
+                      Delete Types
                     </Button>
                   </div>
                 </Card.Text>

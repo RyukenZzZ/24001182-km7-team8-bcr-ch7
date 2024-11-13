@@ -1,84 +1,69 @@
-import { createLazyFileRoute, useNavigate } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
-import Card from 'react-bootstrap/Card'
-import Form from 'react-bootstrap/Form'
-import Button from 'react-bootstrap/Button'
-import Image from 'react-bootstrap/Image'
+import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Card from "react-bootstrap/Card";
+import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
+import Image from "react-bootstrap/Image";
 import {
   getManufacturesById,
   updateManufacture,
-} from '../../../service/manufacture'
+} from "../../../service/manufacture";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 
-export const Route = createLazyFileRoute('/manufactures/edit/$id')({
+export const Route = createLazyFileRoute("/manufactures/edit/$id")({
   component: EditManufacture,
-})
+});
 
 function EditManufacture() {
-  const { id } = Route.useParams()
-  const navigate = useNavigate()
+  const { id } = Route.useParams();
+  const navigate = useNavigate();
+  
+  const { data: manufactureData, isSuccess,isPending } = useQuery({
+    queryKey: ["manufactures", id],
+    queryFn: () => getManufacturesById(id),
+  });
 
-  const [name, setName] = useState('')
-  const [logo, setLogo] = useState(undefined)
-  const [currentLogo, setCurrentLogo] = useState(undefined)
-  const [isLoading, setIsLoading] = useState(true)
+  const [name, setName] = useState("");
+  const [logo, setLogo] = useState(undefined);
+  const [currentLogo, setCurrentLogo] = useState(manufactureData?.logo || undefined);
 
+
+  const { mutate: updateManufactureData,isPending:updatePending } = useMutation({
+    mutationFn: (body) => updateManufacture(id, body),
+    onSuccess: () => {
+      toast.success("Manufacture updated");
+      navigate({ to: "/" });
+    },
+  });
   useEffect(() => {
-    const fetchManufacture = async () => {
-      try {
-        const result = await getManufacturesById(id)
-        if (result?.success && result.data) {
-          setName(result.data.name)
-          setCurrentLogo(result.data.logo)
-        }
-      } catch (error) {
-        console.error('Error fetching manufacture details:', error)
-      } finally {
-        setIsLoading(false)
-      }
+    if (isSuccess) {
+      setName(manufactureData.name);
+      setLogo(manufactureData.logo);
+      setCurrentLogo(manufactureData.logo)
     }
-
-    if (id) {
-      fetchManufacture()
-    }
-  }, [id])
-
-  useEffect(() => {
-    if (logo) {
-      const reader = new FileReader()
-      reader.onload = () => {
-        setCurrentLogo(reader.result)
-      }
-      reader.readAsDataURL(logo)
-    }
-  }, [logo])
-
+  }, [manufactureData, isSuccess]);
   const onSubmit = async (event) => {
-    event.preventDefault()
+    event.preventDefault();
 
     const request = {
       name,
       logo,
-    }
+    };
 
-    const result = await updateManufacture(id, request)
-    if (result?.success) {
-      navigate({ to: '/' })
-      return
-    }
+    updateManufactureData(request);
+  };
 
-    alert(result?.message || 'Failed to update manufacture')
-  }
-
-  if (isLoading) {
+  if (isPending) {
     return (
       <Row className="mt-5">
         <Col>
           <h1 className="text-center">Loading...</h1>
         </Col>
       </Row>
-    )
+    );
   }
 
   return (
@@ -105,8 +90,10 @@ function EditManufacture() {
                     type="file"
                     placeholder="Choose File"
                     onChange={(event) => {
-                      setLogo(event.target.files[0])
-                      setCurrentLogo(URL.createObjectURL(event.target.files[0]))
+                      setLogo(event.target.files[0]);
+                      setCurrentLogo(
+                        URL.createObjectURL(event.target.files[0])
+                      );
                     }}
                     accept=".jpg,.png"
                   />
@@ -118,7 +105,7 @@ function EditManufacture() {
                   <Image src={currentLogo} fluid />
                 </Col>
               </Form.Group>
-              <Button variant="primary" type="submit">
+              <Button variant="primary" type="submit" disabled={updatePending}>
                 Save Changes
               </Button>
             </Form>
@@ -126,7 +113,7 @@ function EditManufacture() {
         </Card>
       </Col>
     </Row>
-  )
+  );
 }
 
-export default EditManufacture
+export default EditManufacture;

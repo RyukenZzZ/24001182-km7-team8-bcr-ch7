@@ -58,8 +58,13 @@ export const createModel = async (request) => {
     body: formData,
   });
   // get the data if fetching succeed!
+  // get data
   const result = await response.json();
-  return result;
+  if (!result?.success) {
+    throw new Error(result?.message);
+  }
+
+  return result?.data;
 };
 
 export const updateModel = async (id, request) => {
@@ -76,8 +81,13 @@ export const updateModel = async (id, request) => {
     body: formData,
   });
   // get the data if fetching succeed!
+  // get data
   const result = await response.json();
-  return result;
+  if (!result?.success) {
+    throw new Error(result?.message);
+  }
+
+  return result?.data;
 };
 
 export const deleteModel = async (id) => {
@@ -94,5 +104,9 @@ export const deleteModel = async (id) => {
 
   // get data
   const result = await response.json();
-  return result;
+  if (!result?.success) {
+    throw new Error(result?.message);
+  }
+
+  return result?.data;
 };
