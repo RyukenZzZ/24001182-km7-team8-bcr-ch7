@@ -20,7 +20,6 @@ const RegisterLazyImport = createFileRoute('/register')()
 const ProfileLazyImport = createFileRoute('/profile')()
 const LoginLazyImport = createFileRoute('/login')()
 const IndexLazyImport = createFileRoute('/')()
-const TypesIndexLazyImport = createFileRoute('/types/')()
 const TypesCreateLazyImport = createFileRoute('/types/create')()
 const TypesIdLazyImport = createFileRoute('/types/$id')()
 const ModelsCreateLazyImport = createFileRoute('/models/create')()
@@ -61,12 +60,6 @@ const IndexLazyRoute = IndexLazyImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
-
-const TypesIndexLazyRoute = TypesIndexLazyImport.update({
-  id: '/types/',
-  path: '/types/',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/types/index.lazy').then((d) => d.Route))
 
 const TypesCreateLazyRoute = TypesCreateLazyImport.update({
   id: '/types/create',
@@ -241,13 +234,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TypesCreateLazyImport
       parentRoute: typeof rootRoute
     }
-    '/types/': {
-      id: '/types/'
-      path: '/types'
-      fullPath: '/types'
-      preLoaderRoute: typeof TypesIndexLazyImport
-      parentRoute: typeof rootRoute
-    }
     '/cars/edit/$id': {
       id: '/cars/edit/$id'
       path: '/cars/edit/$id'
@@ -294,7 +280,6 @@ export interface FileRoutesByFullPath {
   '/models/create': typeof ModelsCreateLazyRoute
   '/types/$id': typeof TypesIdLazyRoute
   '/types/create': typeof TypesCreateLazyRoute
-  '/types': typeof TypesIndexLazyRoute
   '/cars/edit/$id': typeof CarsEditIdLazyRoute
   '/manufactures/edit/$id': typeof ManufacturesEditIdLazyRoute
   '/models/edit/$id': typeof ModelsEditIdLazyRoute
@@ -314,7 +299,6 @@ export interface FileRoutesByTo {
   '/models/create': typeof ModelsCreateLazyRoute
   '/types/$id': typeof TypesIdLazyRoute
   '/types/create': typeof TypesCreateLazyRoute
-  '/types': typeof TypesIndexLazyRoute
   '/cars/edit/$id': typeof CarsEditIdLazyRoute
   '/manufactures/edit/$id': typeof ManufacturesEditIdLazyRoute
   '/models/edit/$id': typeof ModelsEditIdLazyRoute
@@ -335,7 +319,6 @@ export interface FileRoutesById {
   '/models/create': typeof ModelsCreateLazyRoute
   '/types/$id': typeof TypesIdLazyRoute
   '/types/create': typeof TypesCreateLazyRoute
-  '/types/': typeof TypesIndexLazyRoute
   '/cars/edit/$id': typeof CarsEditIdLazyRoute
   '/manufactures/edit/$id': typeof ManufacturesEditIdLazyRoute
   '/models/edit/$id': typeof ModelsEditIdLazyRoute
@@ -357,7 +340,6 @@ export interface FileRouteTypes {
     | '/models/create'
     | '/types/$id'
     | '/types/create'
-    | '/types'
     | '/cars/edit/$id'
     | '/manufactures/edit/$id'
     | '/models/edit/$id'
@@ -376,7 +358,6 @@ export interface FileRouteTypes {
     | '/models/create'
     | '/types/$id'
     | '/types/create'
-    | '/types'
     | '/cars/edit/$id'
     | '/manufactures/edit/$id'
     | '/models/edit/$id'
@@ -395,7 +376,6 @@ export interface FileRouteTypes {
     | '/models/create'
     | '/types/$id'
     | '/types/create'
-    | '/types/'
     | '/cars/edit/$id'
     | '/manufactures/edit/$id'
     | '/models/edit/$id'
@@ -416,7 +396,6 @@ export interface RootRouteChildren {
   ModelsCreateLazyRoute: typeof ModelsCreateLazyRoute
   TypesIdLazyRoute: typeof TypesIdLazyRoute
   TypesCreateLazyRoute: typeof TypesCreateLazyRoute
-  TypesIndexLazyRoute: typeof TypesIndexLazyRoute
   CarsEditIdLazyRoute: typeof CarsEditIdLazyRoute
   ManufacturesEditIdLazyRoute: typeof ManufacturesEditIdLazyRoute
   ModelsEditIdLazyRoute: typeof ModelsEditIdLazyRoute
@@ -437,7 +416,6 @@ const rootRouteChildren: RootRouteChildren = {
   ModelsCreateLazyRoute: ModelsCreateLazyRoute,
   TypesIdLazyRoute: TypesIdLazyRoute,
   TypesCreateLazyRoute: TypesCreateLazyRoute,
-  TypesIndexLazyRoute: TypesIndexLazyRoute,
   CarsEditIdLazyRoute: CarsEditIdLazyRoute,
   ManufacturesEditIdLazyRoute: ManufacturesEditIdLazyRoute,
   ModelsEditIdLazyRoute: ModelsEditIdLazyRoute,
@@ -466,7 +444,6 @@ export const routeTree = rootRoute
         "/models/create",
         "/types/$id",
         "/types/create",
-        "/types/",
         "/cars/edit/$id",
         "/manufactures/edit/$id",
         "/models/edit/$id",
@@ -508,9 +485,6 @@ export const routeTree = rootRoute
     },
     "/types/create": {
       "filePath": "types/create.lazy.jsx"
-    },
-    "/types/": {
-      "filePath": "types/index.lazy.jsx"
     },
     "/cars/edit/$id": {
       "filePath": "cars/edit/$id.lazy.jsx"
