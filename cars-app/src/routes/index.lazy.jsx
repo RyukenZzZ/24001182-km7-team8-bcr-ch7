@@ -53,8 +53,8 @@ function Index() {
         }
 
         // Handle models
-        if (modelResult.success) {
-          setModels(modelResult.data);
+        if (modelResult) {
+          setModels(modelResult);
         } else {
           setError(
             (prev) => prev || modelResult.message || "Failed to fetch models"
