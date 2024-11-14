@@ -1,56 +1,57 @@
-import { createLazyFileRoute, useNavigate } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
-import Card from 'react-bootstrap/Card'
-import Form from 'react-bootstrap/Form'
-import Button from 'react-bootstrap/Button'
-import Image from 'react-bootstrap/Image'
-import { createManufacture } from '../../service/manufacture'
-import { toast } from 'react-toastify'
-import Protected from '../../components/Auth/Protected'
+import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Card from "react-bootstrap/Card";
+import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
+import Image from "react-bootstrap/Image";
+import { createManufacture } from "../../service/manufacture";
+import Protected from "../../components/Auth/Protected";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 
-export const Route = createLazyFileRoute('/manufactures/createManufactures')({
+export const Route = createLazyFileRoute("/manufactures/createManufactures")({
   component: () => (
     <Protected roles={[1]}>
       <CreateManufacture />
     </Protected>
   ),
-})
+});
 
 function CreateManufacture() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  const [name, setName] = useState('')
-  const [logo, setLogo] = useState(undefined)
-  const [currentLogo, setCurrentLogo] = useState(undefined)
+  const [name, setName] = useState("");
+  const [logo, setLogo] = useState(undefined);
+  const [currentLogo, setCurrentLogo] = useState(undefined);
 
+  const { mutate: createManufactureData,isPending } = useMutation({
+    mutationFn: (request) => createManufacture(request),
+    onSuccess: () => {
+      toast.success("New manufacture created");
+      navigate({ to: "/" });
+    },
+  });
   useEffect(() => {
     if (logo) {
-      const reader = new FileReader()
+      const reader = new FileReader();
       reader.onload = () => {
-        setCurrentLogo(reader.result)
-      }
-      reader.readAsDataURL(logo)
+        setCurrentLogo(reader.result);
+      };
+      reader.readAsDataURL(logo);
     }
-  }, [logo])
+  }, [logo]);
 
   const onSubmit = async (event) => {
-    event.preventDefault()
+    event.preventDefault();
 
     const request = {
       name,
       logo,
-    }
-
-    const result = await createManufacture(request)
-    if (result?.success) {
-      navigate({ to: '/' })
-      return
-    }
-
-    toast.error(result?.message || 'Failed to create manufacture')
-  }
+    };
+    createManufactureData(request);
+  };
 
   return (
     <Row className="justify-content-center">
@@ -77,8 +78,10 @@ function CreateManufacture() {
                     placeholder="Choose File"
                     required
                     onChange={(event) => {
-                      setLogo(event.target.files[0])
-                      setCurrentLogo(URL.createObjectURL(event.target.files[0]))
+                      setLogo(event.target.files[0]);
+                      setCurrentLogo(
+                        URL.createObjectURL(event.target.files[0])
+                      );
                     }}
                     accept=".jpg,.png"
                   />
@@ -91,7 +94,7 @@ function CreateManufacture() {
                 </Col>
               </Form.Group>
 
-              <Button variant="primary" type="submit">
+              <Button variant="primary" type="submit" disabled={isPending}>
                 Submit
               </Button>
             </Form>
@@ -99,5 +102,5 @@ function CreateManufacture() {
         </Card>
       </Col>
     </Row>
-  )
+  );
 }

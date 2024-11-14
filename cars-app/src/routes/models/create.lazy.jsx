@@ -1,5 +1,5 @@
 import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import {useState } from "react";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
@@ -9,7 +9,7 @@ import { getManufactures } from "../../service/manufacture";
 import { createModel } from "../../service/model";
 import { toast } from "react-toastify";
 import Protected from "../../components/Auth/Protected";
-import { useMutation,useQuery } from "@tanstack/react-query";
+import { useQuery,useMutation } from "@tanstack/react-query";
 
 export const Route = createLazyFileRoute("/models/create")({
   component: () => (
@@ -22,25 +22,22 @@ export const Route = createLazyFileRoute("/models/create")({
 function CreateModel() {
   const navigate = useNavigate();
 
+  const {data:manufactures}=useQuery({
+    queryKey:["manufactures"],
+    queryFn:()=>getManufactures()
+  })
+
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [manufactureId, setManufactureId] = useState(0);
 
-  const { mutate: createModelData, isPending } = useMutation({
-    mutationFn: (request) => createModel(request),
-    onSuccess: () => {
-      navigate({ to: '/' })
-    },
-    onError: (error) => {
-      toast.error(error?.message)
-    },
+  const {mutate:createModelData,isPending:createPending} = useMutation({
+    mutationFn:(body)=>createModel(body),
+    onSuccess:()=>{
+      toast.success("New model added");
+      navigate({to:"/"}); 
+    }
   })
-
-  const {data: manufactures}= useQuery({
-    queryKey:["manufactures"],
-    queryFn:()=>getManufactures(),
-  })
-
 
   const onSubmit = async (event) => {
     event.preventDefault();
@@ -116,7 +113,7 @@ function CreateModel() {
               </Form.Group>
 
               <div className="d-grid gap-2">
-                <Button type="submit"disabled= {isPending} variant="primary">
+                <Button type="submit" variant="primary" disabled={createPending}>
                   Create Model
                 </Button>
               </div>

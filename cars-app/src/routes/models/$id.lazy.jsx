@@ -1,5 +1,4 @@
 import { createLazyFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
@@ -8,6 +7,7 @@ import { deleteModel, getDetailModel } from "../../service/model";
 import { toast } from "react-toastify";
 import { confirmAlert } from "react-confirm-alert";
 import { useSelector } from "react-redux";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const Route = createLazyFileRoute("/models/$id")({
   component: ModelDetail,
@@ -16,30 +16,29 @@ export const Route = createLazyFileRoute("/models/$id")({
 function ModelDetail() {
   const { id } = Route.useParams();
   const navigate = useNavigate();
-
   const { user } = useSelector((state) => state.auth);
 
-  const [model, setModel] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isNotFound, setIsNotFound] = useState(false);
+  const {
+    data: model,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["model", id],
+    queryFn: () => getDetailModel(id),
+    enabled: !!id,
+    retry: false,
+  });
 
-  useEffect(() => {
-    const getDetailModelData = async (id) => {
-      setIsLoading(true);
-      const result = await getDetailModel(id);
-      if (result?.success) {
-        setModel(result.data);
-        setIsNotFound(false);
-      } else {
-        setIsNotFound(true);
-      }
-      setIsLoading(false);
-    };
-
-    if (id) {
-      getDetailModelData(id);
+  const { mutate: deleteModelData } = useMutation({
+    mutationFn: () => deleteModel(id),
+    onSuccess: () => {
+      toast.success("Model deleted");
+      navigate({ to: "/" });
+    },
+    onError:()=>{
+      toast.error("Unable to delete")
     }
-  }, [id]);
+  });
 
   if (isLoading) {
     return (
@@ -51,7 +50,7 @@ function ModelDetail() {
     );
   }
 
-  if (isNotFound) {
+  if (isError || !model) {
     return (
       <Row className="mt-5">
         <Col>
@@ -70,15 +69,7 @@ function ModelDetail() {
       buttons: [
         {
           label: "Yes",
-          onClick: async () => {
-            const result = await deleteModel(id);
-            if (result?.success) {
-              navigate({ to: "/" });
-              return;
-            }
-
-            toast.error(result?.message);
-          },
+          onClick: ()=>{deleteModelData()},
         },
         {
           label: "No",

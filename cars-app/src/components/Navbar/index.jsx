@@ -3,10 +3,11 @@ import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import Container from "react-bootstrap/Container";
 import Image from "react-bootstrap/Image";
-import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setToken, setUser } from "../../redux/slices/auth";
 import { profile } from "../../service/auth";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect, useCallback } from "react";
 
 const NavigationBar = () => {
   const dispatch = useDispatch();
@@ -14,41 +15,34 @@ const NavigationBar = () => {
 
   const { user, token } = useSelector((state) => state.auth);
 
-  useEffect(() => {
-    const getProfile = async () => {
-      // fetch get profile
-      const result = await profile();
-      if (result.success) {
-        // set the user state here
-        dispatch(setUser(result.data));
-        return;
-      }
-
-      // If not success
-      // delete the local storage here
-      dispatch(setUser(null));
-      dispatch(setToken(null));
-
-      // redirect to login
-      navigate({ to: "/login" });
-    };
-
-    if (token) {
-      // hit api auth get profile and pass the token to the function
-      getProfile();
-    }
-  }, [dispatch, navigate, token]);
-
-  const logout = (event) => {
-    event.preventDefault();
-
+  const handleLogout = useCallback(() => {
     // delete the local storage here
     dispatch(setUser(null));
     dispatch(setToken(null));
 
     // redirect to login
     navigate({ to: "/login" });
-  };
+}, [dispatch, navigate]);
+
+// Use react query to fetch API
+const { data, isSuccess, isError } = useQuery({
+    queryKey: ["profile"],
+    queryFn: profile,
+    enabled: token ? true : false,
+});
+
+useEffect(() => {
+    if (isSuccess) {
+        dispatch(setUser(data));
+    } else if (isError) {
+        handleLogout();
+    }
+}, [isSuccess, isError, data, dispatch, handleLogout]);
+
+const logout = (event) => {
+    event.preventDefault();
+    handleLogout();
+};
 
   return (
     <Navbar collapseOnSelect expand="lg" className="bg-body-tertiary">

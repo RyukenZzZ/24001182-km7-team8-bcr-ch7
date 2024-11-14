@@ -9,6 +9,7 @@ import { getManufactures } from "../../../service/manufacture";
 import { getDetailModel, updateModel } from "../../../service/model";
 import { toast } from "react-toastify";
 import Protected from "../../../components/Auth/Protected";
+import { useQuery, useMutation } from "@tanstack/react-query";
 
 export const Route = createLazyFileRoute("/models/edit/$id")({
   component: () => (
@@ -22,48 +23,38 @@ function EditModel() {
   const { id } = Route.useParams();
   const navigate = useNavigate();
 
+  const {
+    data: manufactures,
+    isPending,
+  } = useQuery({
+    queryKey: ["manufactures"],
+    queryFn: () => getManufactures(),
+  });
+
+  const {data:modelData,isPending:modelPending,isSuccess}=useQuery({
+    queryKey:["models",id],
+    queryFn:()=>getDetailModel(id),
+  })
+
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [manufactures, setManufactures] = useState([]);
   const [manufactureId, setManufactureId] = useState(0);
-  const [isNotFound, setIsNotFound] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+
+  const { mutate: updateModelData,isPending:updatePending } = useMutation({
+    mutationFn: (body) => updateModel(id, body),
+    onSuccess: () => {
+      toast.success("Model updated");
+      navigate({ to: `/models/${id}` });
+    },
+  });
 
   useEffect(() => {
-    const getManufacturesData = async () => {
-      const result = await getManufactures();
-      if (result?.success) {
-        setManufactures(result.data); // Pastikan bahwa result.data adalah array
-      }
-    };
-
-    getManufacturesData();
-  }, []);
-
-  useEffect(() => {
-    const getDetailModelData = async (id) => {
-      setIsLoading(true);
-      const result = await getDetailModel(id);
-      if (result?.success) {
-        setName(result.data?.name);
-        setDescription(result.data?.description);
-        setManufactureId(result.data?.manufacture_id);
-        setIsNotFound(false);
-      } else {
-        setIsNotFound(true);
-      }
-      setIsLoading(false);
-    };
-
-    if (id) {
-      getDetailModelData(id);
+    if (isSuccess) {
+      setName(modelData.name);
+      setDescription(modelData.description);
+      setManufactureId(modelData.manufacture_id);
     }
-  }, [id]);
-
-  if (isNotFound) {
-    navigate({ to: "/" });
-    return null;
-  }
+  }, [modelData, isSuccess]);
 
   const onSubmit = async (event) => {
     event.preventDefault();
@@ -73,14 +64,12 @@ function EditModel() {
       description,
       manufactureId,
     };
-    const result = await updateModel(id, request);
-    if (result?.success) {
-      navigate({ to: `/models/${id}` });
-      return;
-    }
-
-    toast.error(result?.message);
+    updateModelData(request);
   };
+
+  if (modelPending) {
+    return <h1>Loading...</h1>;
+  }
 
   return (
     <Row className="mt-5">
@@ -130,7 +119,7 @@ function EditModel() {
                     <option disabled value="">
                       Select Manufacture
                     </option>
-                    {!isLoading &&
+                    {!isPending &&
                       manufactures.length > 0 &&
                       manufactures.map((manufacture) => (
                         <option key={manufacture.id} value={manufacture.id}>
@@ -141,7 +130,7 @@ function EditModel() {
                 </Col>
               </Form.Group>
               <div className="d-grid gap-2">
-                <Button type="submit" variant="primary">
+                <Button type="submit" variant="primary" disabled={updatePending}>
                   Edit Model
                 </Button>
               </div>

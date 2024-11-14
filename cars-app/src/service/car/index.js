@@ -16,7 +16,11 @@ export const getCars = async (cars) => {
 
   // get data
   const result = await response.json();
-  return result;
+  if (!result?.success) {
+    throw new Error(result?.message);
+  }
+
+  return result?.data;
 };
 
 export const getCarById = async (id) => {
@@ -32,7 +36,11 @@ export const getCarById = async (id) => {
 
   // get data
   const result = await response.json();
-  return result;
+  if (!result?.success) {
+    throw new Error(result?.message);
+  }
+
+  return result?.data;
 };
 
 export const getDetailCars = async (id) => {
@@ -49,7 +57,11 @@ export const getDetailCars = async (id) => {
 
   // get data
   const result = await response.json();
-  return result;
+  if (!result?.success) {
+    throw new Error(result?.message);
+  }
+
+  return result?.data;
 };
 
 export const createCar = async (request) => {
@@ -86,7 +98,11 @@ export const createCar = async (request) => {
   });
 
   const result = await response.json();
-  return result;
+  if (!result?.success) {
+    throw new Error(result?.message);
+  }
+
+  return result?.data;
 };
 
 export const updateCar = async (id, request) => {
@@ -123,7 +139,11 @@ export const updateCar = async (id, request) => {
   });
 
   const result = await response.json();
-  return result;
+  if (!result?.success) {
+    throw new Error(result?.message);
+  }
+
+  return result?.data;
 };
 
 export const deleteCar = async (id) => {
@@ -137,5 +157,9 @@ export const deleteCar = async (id) => {
   });
 
   const result = await response.json();
-  return result;
+  if (!result?.success) {
+    throw new Error(result?.message);
+  }
+
+  return result?.data;
 };

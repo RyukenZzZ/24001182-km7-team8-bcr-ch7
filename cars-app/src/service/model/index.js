@@ -58,6 +58,10 @@ export const createModel = async (request) => {
     body: formData,
   });
   // get the data if fetching succeed!
+<<<<<<< HEAD
+=======
+  // get data
+>>>>>>> f47e6dab3895d687aa1de1d927593e5aa522fc0d
   const result = await response.json();
   if (!result?.success) {
     throw new Error(result?.message);
@@ -80,6 +84,10 @@ export const updateModel = async (id, request) => {
     body: formData,
   });
   // get the data if fetching succeed!
+<<<<<<< HEAD
+=======
+  // get data
+>>>>>>> f47e6dab3895d687aa1de1d927593e5aa522fc0d
   const result = await response.json();
   if (!result?.success) {
     throw new Error(result?.message);
