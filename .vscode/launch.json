@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Chapter 6 - React.js",
+            "name": "Chapter 7 - React.js",
             "request": "launch",
             "type": "chrome",
             "url": "http://localhost:5173/",
@@ -14,7 +14,7 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Kel 8 models",
+            "name": "chapter-7",
             "skipFiles": [
                 "<node_internals>/**"
             ],

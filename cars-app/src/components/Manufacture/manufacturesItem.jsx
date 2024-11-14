@@ -19,7 +19,7 @@ const ManufactureItem = ({ manufacture }) => {
                     </Card.Title>
                     <Button
                         as={Link}
-                        href={`/manufactures/${manufacture.id}`}
+                        href={`/manufactures/${manufacture?.id}`}
                         variant="primary"
                         className="mt-3 align-self-start"
                     >

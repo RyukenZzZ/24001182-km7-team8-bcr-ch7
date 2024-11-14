@@ -6,8 +6,8 @@ import Button from "react-bootstrap/esm/Button";
 import { confirmAlert } from "react-confirm-alert";
 import { toast } from "react-toastify";
 import { deleteType, getTypesById } from "../../service/type";
-import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { useQuery, useMutation } from "@tanstack/react-query";
 
 export const Route = createLazyFileRoute("/types/$id")({
   component: TypeDetail,
@@ -15,62 +15,46 @@ export const Route = createLazyFileRoute("/types/$id")({
 
 function TypeDetail() {
   const { id } = Route.useParams();
-  const [isLoading, setIsLoading] = useState(false);
-  const [isDeleteLoading, setIsDeleteLoading] = useState(false);
-  const [type, setType] = useState("");
   const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
-  useEffect(() => {
-    const getTypeData = async () => {
-      setIsLoading(true);
-      const result = await getTypesById(id);
-      if (result.success) {
-        setType(result.data);
-        setIsLoading(false);
-        return;
-      }
-      toast.error(result.message);
-      setIsLoading(false);
-      navigate({ to: "/types" });
-    };
-    getTypeData();
-  }, [id, navigate]);
 
-  const onDelete = async (e) => {
-    e.preventDefault();
-    const deleteUserData = async () => {
-      setIsDeleteLoading(true);
-      const result = await deleteType(id);
-      if (result.success) {
-        toast.success(result.message);
-        setIsDeleteLoading(false);
-        navigate({ to: "/types" });
-        return;
-      }
-      toast.error(
-        result.message === "Internal Server Error"
-          ? "Some cars are using this type"
-          : result.message
-      );
-      setIsDeleteLoading(false);
-    };
+  const { data: type, isPending } = useQuery({
+    queryKey: ["type", id],
+    queryFn: () => getTypesById(id),
+    enabled: !!id,
+  });
+
+  const { mutate: deleteTypeData } = useMutation({
+    mutationFn: () => deleteType(id),
+    onSuccess: () => {
+      toast.success("Type deleted");
+      navigate({ to: "/" });
+    },
+    onError: () => {
+      toast.error("Unable to delete");
+    },
+  });
+
+  const onDelete = async (event) => {
+    event.preventDefault();
 
     confirmAlert({
-      title: "Confirm to Delete",
-      message: "Are you sure you want to delete this type?",
+      title: "Confirm to delete",
+      message: "Are you sure to delete this data?",
       buttons: [
         {
           label: "Yes",
-          onClick: deleteUserData,
+          onClick: () => deleteTypeData(),
         },
         {
           label: "No",
+          onClick: () => {},
         },
       ],
     });
   };
 
-  if (isLoading) {
+  if (isPending) {
     return <h2>Loading...</h2>;
   }
   return (
@@ -94,19 +78,14 @@ function TypeDetail() {
                       variant="primary"
                       size="md"
                     >
-                      Edit Type
+                      Edit Types
                     </Button>
                   </div>
                 </Card.Text>
                 <Card.Text>
                   <div className="d-grid gap-2">
-                    <Button
-                      onClick={onDelete}
-                      variant="danger"
-                      size="md"
-                      disabled={isDeleteLoading}
-                    >
-                      Delete Type
+                    <Button onClick={onDelete} variant="danger" size="md">
+                      Delete Types
                     </Button>
                   </div>
                 </Card.Text>

@@ -1,5 +1,5 @@
 import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
@@ -10,8 +10,9 @@ import { getManufactures } from "../../service/manufacture";
 import { getModels } from "../../service/model";
 import { getTypes } from "../../service/type";
 import { createCar } from "../../service/car";
-import { toast } from "react-toastify";
 import Protected from "../../components/Auth/Protected";
+import {useMutation,useQuery} from "@tanstack/react-query";
+import { toast } from "react-toastify";
 
 export const Route = createLazyFileRoute("/cars/create")({
   component: () => (
@@ -26,7 +27,6 @@ function CreateCar() {
 
   const [available, setAvailable] = useState(false);
   const [plate, setPlate] = useState("");
-  const [models, setModels] = useState([]);
   const [modelId, setModelId] = useState(0);
   const [rentPerDay, setRentPerDay] = useState("");
   const [capacity, setCapacity] = useState("");
@@ -35,40 +35,34 @@ function CreateCar() {
   const [description, setDescription] = useState("");
   const [availableAt, setAvailableAt] = useState("");
   const [transmission, setTransmission] = useState("");
-  const [types, setTypes] = useState([]);
   const [typeId, setTypeId] = useState(0);
-  const [manufactures, setManufactures] = useState([]);
   const [manufactureId, setManufactureId] = useState(0);
   const [year, setYear] = useState("");
   const [options, setOptions] = useState([]);
   const [specs, setSpecs] = useState([]);
 
-  useEffect(() => {
-    const getManufacturesData = async () => {
-      const result = await getManufactures();
-      if (result?.success) {
-        setManufactures(result?.data);
-      }
-    };
+  const {mutate:createCarData,isPending}=useMutation({
+    mutationFn:(request)=>createCar(request),
+    onSuccess:()=>{
+      toast.success("New car created");
+      navigate({to:"/"})
+    }
+  })
 
-    const getModelsData = async () => {
-      const result = await getModels();
-      if (result?.success) {
-        setModels(result?.data);
-      }
-    };
+  const {data:models}=useQuery({
+    queryKey:["models"],
+    queryFn:()=>getModels()
+  })
 
-    const getTypesData = async () => {
-      const result = await getTypes();
-      if (result?.success) {
-        setTypes(result?.data);
-      }
-    };
+  const {data:manufactures}=useQuery({
+    queryKey:["manufactures"],
+    queryFn:()=>getManufactures(),
+  })
 
-    getTypesData();
-    getModelsData();
-    getManufacturesData();
-  }, []);
+  const {data:types}=useQuery({
+    queryKey:["types"],
+    queryFn:()=>getTypes(),
+  })
 
   const handleAddOption = () => {
     setOptions([...options, ""]); // Menambahkan opsi baru kosong
@@ -109,15 +103,8 @@ function CreateCar() {
       options,
       specs,
     };
-
-    const result = await createCar(request);
-    if (result?.success) {
-      navigate({ to: "/" });
-      return;
+    createCarData(request);
     }
-
-    toast.error(result?.message);
-  };
 
   return (
     <Row className="mt-5">
@@ -153,7 +140,7 @@ function CreateCar() {
                     <option disabled selected>
                       Select Manufacture
                     </option>
-                    {manufactures.length > 0 &&
+                    {manufactures?.length > 0 &&
                       manufactures.map((manufacture) => (
                         <option key={manufacture?.id} value={manufacture?.id}>
                           {manufacture?.name}
@@ -175,7 +162,7 @@ function CreateCar() {
                     <option disabled selected>
                       Select Model
                     </option>
-                    {models.length > 0 &&
+                    {models?.length > 0 &&
                       models.map((model) => (
                         <option key={model?.id} value={model?.id}>
                           {model?.name}
@@ -266,7 +253,7 @@ function CreateCar() {
                     <option disabled selected>
                       Select Type
                     </option>
-                    {types.length > 0 &&
+                    {types?.length > 0 &&
                       types.map((type) => (
                         <option key={type?.id} value={type?.id}>
                           {type?.name}
@@ -377,7 +364,7 @@ function CreateCar() {
               </Form.Group>
 
               <div className="d-grid gap-2">
-                <Button type="submit" variant="primary">
+                <Button type="submit" variant="primary" disabled={isPending}>
                   Create Car
                 </Button>
               </div>

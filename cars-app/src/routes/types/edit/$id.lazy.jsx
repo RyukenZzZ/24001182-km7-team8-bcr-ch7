@@ -8,6 +8,7 @@ import Form from "react-bootstrap/Form";
 import { getTypesById, updateType } from "../../../service/type";
 import { toast } from "react-toastify";
 import Protected from "../../../components/Auth/Protected";
+import { useQuery, useMutation } from "@tanstack/react-query";
 
 export const Route = createLazyFileRoute("/types/edit/$id")({
   component: () => (
@@ -20,48 +21,46 @@ export const Route = createLazyFileRoute("/types/edit/$id")({
 function TypeDetail() {
   const navigate = useNavigate();
   const { id } = Route.useParams();
-  const [isLoading, setIsLoading] = useState(false);
-  const [isTypeLoading,setIsTypeLoading] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [characteristic, setCharacteristic] = useState("");
   const [style, setStyle] = useState("");
 
+  const {
+    data: typeData,
+    isPending,
+    isSuccess,
+  } = useQuery({
+    queryKey: ["type", id],
+    queryFn: () => getTypesById(id),
+  });
+
   useEffect(() => {
-    const getCurrentType = async () => {
-      setIsTypeLoading(true);
-      const result = await getTypesById(id);
-      if (result.success) {
-        setIsTypeLoading(false);
-        setName(result.data.name);
-        setDescription(result.data.description);
-        setCharacteristic(result.data.characteristic);
-        setStyle(result.data.style);
-        return;
-      }
-      setIsTypeLoading(false);
-      toast.error(result.message);
-      navigate({ to: "/types" });
-    };
-    getCurrentType();
-  }, [id, navigate]);
+    if (isSuccess) {
+      setName(typeData.name);
+      setDescription(typeData.description);
+      setCharacteristic(typeData.characteristic);
+      setStyle(typeData.style);
+    }
+  }, [typeData, isSuccess]);
+
+  const { mutate: updateTypeData, isPending: updatePending } = useMutation({
+    mutationFn: (body) => updateType(id, body),
+    onSuccess: () => {
+      toast.success("Type updated");
+      navigate({ to: `/types/${id}` });
+    },
+  });
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
     const body = { name, description, characteristic, style };
-    const result = await updateType(id, body);
-    if (result.success) {
-      toast.success(result.message);
-      navigate({to:`/types/${id}`});
-      setIsLoading(false);
-      return;
-    }
-    toast.error(result.message);
-    setIsLoading(false);
+
+    updateTypeData(body);
   };
-  if(isTypeLoading){
-    return (<h2>Loading...</h2>)
+
+  if (isPending) {
+    return <h2>Loading...</h2>;
   }
 
   return (
@@ -134,7 +133,7 @@ function TypeDetail() {
                 </Col>
               </Form.Group>
               <div className="d-grid gap-2">
-                <Button type="submit" variant="primary" disabled={isLoading}>
+                <Button type="submit" variant="primary" disabled={updatePending}>
                   Edit Type
                 </Button>
               </div>

@@ -5,7 +5,11 @@ export const getTypes = async () => {
     method: "GET",
   });
   const result = await res.json();
-  return result;
+  if (!result?.success) {
+    throw new Error(result?.message);
+  }
+
+  return result?.data;
 };
 
 export const getTypesById = async (id) => {
@@ -15,7 +19,10 @@ export const getTypesById = async (id) => {
     method: "GET",
   });
   const result = await res.json();
-  return result;
+  if (!result?.success) {
+    throw new Error(result?.message);
+  }
+  return result?.data;
 };
 
 export const createType = async (request) => {
@@ -31,7 +38,11 @@ export const createType = async (request) => {
     body: formData,
   });
   const result = await res.json();
-  return result;
+  if (!result?.success) {
+    throw new Error(result?.message);
+  }
+
+  return result?.data;
 };
 
 export const updateType = async (id, request) => {
@@ -47,7 +58,11 @@ export const updateType = async (id, request) => {
     body: formData,
   });
   const result = await res.json();
-  return result;
+  if (!result?.success) {
+    throw new Error(result?.message);
+  }
+
+  return result?.data;
 };
 
 export const deleteType = async (id) => {
@@ -57,5 +72,9 @@ export const deleteType = async (id) => {
     method: "DELETE",
   });
   const result = await res.json();
-  return result;
+  if (!result?.success) {
+    throw new Error(result?.message);
+  }
+
+  return result?.data;
 };

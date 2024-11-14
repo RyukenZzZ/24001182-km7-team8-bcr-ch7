@@ -16,7 +16,11 @@ export const getManufactures = async (manufacture) => {
 
   // get data
   const result = await response.json();
-  return result;
+  if (!result?.success) {
+    throw new Error(result?.message);
+  }
+
+  return result?.data;
 };
 
 export const getManufacturesById = async (id) => {
@@ -32,7 +36,11 @@ export const getManufacturesById = async (id) => {
 
   // get data
   const result = await response.json();
-  return result;
+  if (!result?.success) {
+    throw new Error(result?.message);
+  }
+
+  return result?.data;
 };
 
 export const getDetailManufactures = async (id) => {
@@ -48,7 +56,11 @@ export const getDetailManufactures = async (id) => {
 
   // get data
   const result = await response.json();
-  return result;
+  if (!result?.success) {
+    throw new Error(result?.message);
+  }
+
+  return result?.data;
 };
 
 export const createManufacture = async (request) => {
@@ -69,8 +81,13 @@ export const createManufacture = async (request) => {
     body: formData,
   });
 
+  // get data
   const result = await response.json();
-  return result;
+  if (!result?.success) {
+    throw new Error(result?.message);
+  }
+
+  return result?.data;
 };
 
 export const updateManufacture = async (id, request) => {
@@ -91,8 +108,13 @@ export const updateManufacture = async (id, request) => {
     }
   );
 
+  // get data
   const result = await response.json();
-  return result;
+  if (!result?.success) {
+    throw new Error(result?.message);
+  }
+
+  return result?.data;
 };
 export const deleteManufacture = async (id) => {
   const token = localStorage.getItem("token");
@@ -105,7 +127,11 @@ export const deleteManufacture = async (id) => {
       method: "DELETE",
     }
   );
-
+  // get data
   const result = await response.json();
-  return result;
+  if (!result?.success) {
+    throw new Error(result?.message);
+  }
+
+  return result?.data;
 };
