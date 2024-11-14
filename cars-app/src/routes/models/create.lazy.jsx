@@ -101,7 +101,7 @@ function CreateModel() {
                     <option disabled selected>
                       Select Manufacture
                     </option>
-                    {manufactures.length > 0 &&
+                    {manufactures?.length > 0 &&
                       manufactures.map((manufacture) => (
                         <option key={manufacture?.id} value={manufacture?.id}>
                           {manufacture?.name}

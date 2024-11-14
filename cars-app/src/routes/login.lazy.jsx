@@ -1,15 +1,17 @@
-import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
+import { createLazyFileRoute, useNavigate,Link } from "@tanstack/react-router";
 import { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
+import Image from "react-bootstrap/Image";
 import { useDispatch, useSelector } from "react-redux";
 import { setToken } from "../redux/slices/auth";
 import { login } from "../service/auth";
 import { toast } from "react-toastify";
 import { useMutation } from "@tanstack/react-query";
+import carsImage from "../assets/login-cars.png";
 
 export const Route = createLazyFileRoute("/login")({
     component: Login,
@@ -24,22 +26,22 @@ function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-   if (token){
-    navigate({to: "/"});
-   }
-
-   const { mutate: loginUser } = useMutation({
-       mutationFn: (body) => {
-        return login(body);
-       },
-       onSuccess: (data) => {
-        dispatch(setToken(data?.token));
+    if (token) {
         navigate({ to: "/" });
-       },
-       onError: (error) => {
-        toast.error(error?.message);
-       },
-   });
+    }
+
+    const { mutate: loginUser,isPending } = useMutation({
+        mutationFn: (body) => {
+            return login(body);
+        },
+        onSuccess: (data) => {
+            dispatch(setToken(data?.token));
+            navigate({ to: "/" });
+        },
+        onError: (error) => {
+            toast.error(error?.message);
+        },
+    });
     const onSubmit = async (event) => {
         event.preventDefault();
 
@@ -55,10 +57,13 @@ function Login() {
     };
 
     return (
-        <Row className="mt-5">
-            <Col className="offset-md-3">
-                <Card>
-                    <Card.Header className="text-center">Login</Card.Header>
+        <Row className="vw-100 vh-100 d-flex align-items-center justify-content-center">
+            <Col className="col-md-9 h-100">
+                <Image src={carsImage} className="img-fluid h-100" style={{objectFit: "cover"}}/>
+            </Col>
+            <Col className="col-md-3 h-100 d-flex align-items-center justify-content-center">
+                <Card className="border-0 w-100">
+                    <Card.Header className="text-left bg-white fw-bold fs-4 mb-3">Welcome to BCR</Card.Header>
                     <Card.Body>
                         <Form onSubmit={onSubmit}>
                             <Form.Group
@@ -66,13 +71,13 @@ function Login() {
                                 className="mb-3"
                                 controlId="email"
                             >
-                                <Form.Label column sm={3}>
+                                <Form.Label column sm={12}>
                                     Email
                                 </Form.Label>
-                                <Col sm="9">
+                                <Col sm="12">
                                     <Form.Control
                                         type="email"
-                                        placeholder="Email"
+                                        placeholder="contoh : fufufafa@example.com"
                                         required
                                         value={email}
                                         onChange={(event) => {
@@ -86,10 +91,10 @@ function Login() {
                                 className="mb-3"
                                 controlId="password"
                             >
-                                <Form.Label column sm={3}>
+                                <Form.Label column sm={12}>
                                     Password
                                 </Form.Label>
-                                <Col sm="9">
+                                <Col sm="12">
                                     <Form.Control
                                         type="password"
                                         placeholder="Password"
@@ -101,16 +106,16 @@ function Login() {
                                     />
                                 </Col>
                             </Form.Group>
-                            <div className="d-grid gap-2">
-                                <Button type="submit" variant="primary">
+                            <div className="d-grid gap-2 mt-5">
+                                <Button type="submit" variant="primary" disabled={isPending}>
                                     Login
                                 </Button>
+                                <p>Don{"`"}t have an account? <Link to={"/register"} className="text-decoration-none">Register</Link></p>
                             </div>
                         </Form>
                     </Card.Body>
                 </Card>
             </Col>
-            <Col md={3}></Col>
         </Row>
     );
 }
