@@ -37,6 +37,8 @@ function EditCar() {
     const [currentImage, setCurrentImage] = useState(undefined);
     const [transmission, setTransmission] = useState("");
     const [year, setYear] = useState(0);
+    const [options, setOptions] = useState([]);
+    const [specs, setSpecs] = useState([]);
 
     const [modelId, setModelId] = useState(0);
     const [manufactureId, setManufactureId] = useState(0);
@@ -45,17 +47,17 @@ function EditCar() {
     // Fetch models, manufactures, and types using useQuery
     const modelsQuery = useQuery({
         queryKey: ["models"],
-        queryFn: getModels,
+        queryFn: ()=>getModels(),
     });
 
     const manufacturesQuery = useQuery({
         queryKey: ["manufactures"],
-        queryFn: getManufactures,
+        queryFn: ()=>getManufactures(),
     });
 
     const typesQuery = useQuery({
         queryKey: ["types"],
-        queryFn: getTypes,
+        queryFn: ()=>getTypes(),
     });
 
     // Fetch car details by id using useQuery
@@ -76,6 +78,8 @@ function EditCar() {
             setCurrentImage(data.image);
             setTransmission(data.transmission);
             setYear(data.year);
+            setOptions(data.options);
+            setSpecs(data.specs);
         },
     });
 
@@ -89,6 +93,26 @@ function EditCar() {
             toast.error(error?.message || "Failed to update car");
         },
     });
+
+    const handleAddOption = () => {
+        setOptions([...options, ""]); // Menambahkan opsi baru kosong
+    };
+
+    const handleOptionChange = (index, value) => {
+        const newOptions = [...options];
+        newOptions[index] = value;
+        setOptions(newOptions);
+    };
+
+    const handleAddSpec = () => {
+        setSpecs([...specs, ""]); // Menambahkan spesifikasi baru kosong
+    };
+
+    const handleSpecChange = (index, value) => {
+        const newSpecs = [...specs];
+        newSpecs[index] = value;
+        setSpecs(newSpecs);
+    };
 
     const onSubmit = (event) => {
         event.preventDefault();
@@ -105,6 +129,8 @@ function EditCar() {
             image,
             transmission,
             year,
+            options,
+            specs,
         };
         updateCarMutation.mutate(request);
     };
@@ -293,6 +319,72 @@ function EditCar() {
                                 <Form.Group
                                     as={Row}
                                     className="mb-3"
+                                    controlId="options"
+                                >
+                                    <Form.Label column sm={3}>
+                                        Options
+                                    </Form.Label>
+                                    <Col sm="9">
+                                        {options.map((option, index) => (
+                                            <div key={index} className="mb-2">
+                                                <Form.Control
+                                                    type="text"
+                                                    placeholder={`Option ${index + 1}`}
+                                                    value={option}
+                                                    onChange={(e) =>
+                                                        handleOptionChange(
+                                                            index,
+                                                            e.target.value
+                                                        )
+                                                    }
+                                                />
+                                            </div>
+                                        ))}
+                                        <Button
+                                            variant="secondary"
+                                            onClick={handleAddOption}
+                                        >
+                                            Add Option
+                                        </Button>
+                                    </Col>
+                                </Form.Group>
+
+                                <Form.Group
+                                    as={Row}
+                                    className="mb-3"
+                                    controlId="specs"
+                                >
+                                    <Form.Label column sm={3}>
+                                        Specifications
+                                    </Form.Label>
+                                    <Col sm="9">
+                                        {specs.map((spec, index) => (
+                                            <div key={index} className="mb-2">
+                                                <Form.Control
+                                                    type="text"
+                                                    placeholder={`Specification ${index + 1}`}
+                                                    value={spec}
+                                                    onChange={(e) =>
+                                                        handleSpecChange(
+                                                            index,
+                                                            e.target.value
+                                                        )
+                                                    }
+                                                />
+                                            </div>
+                                        ))}
+                                        <Button
+                                            variant="secondary"
+                                            onClick={handleAddSpec}
+                                        >
+                                            Add Specification
+                                        </Button>
+                                    </Col>
+                                </Form.Group>
+
+                                <Form.Group
+                                    as={Row}
+                                    className="mb-3"
                                     controlId="image"
                                 >
                                     <Form.Label column sm={3}>
@@ -325,7 +417,7 @@ function EditCar() {
                                 <div className="d-grid gap-2">
                                     <Button
                                         type="submit"
-                                        disabled={updateCarMutation.isLoading}
+                                        disabled={updateCarMutation.isPending}
                                         variant="primary"
                                     >
                                         Update Car
