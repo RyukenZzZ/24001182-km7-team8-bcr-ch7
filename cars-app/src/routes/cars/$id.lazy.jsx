@@ -4,6 +4,7 @@ import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
+import Container from "react-bootstrap/Container";
 import { deleteCar, getDetailCars } from "../../service/car";
 import { toast } from "react-toastify";
 import { confirmAlert } from "react-confirm-alert";
@@ -12,13 +13,27 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const Route = createLazyFileRoute("/cars/$id")({
     component: CarDetail,
+    component: CarDetail,
 });
 
 function CarDetail() {
     const { id } = Route.useParams();
     const navigate = useNavigate();
     const { user } = useSelector((state) => state.auth);
+    const { id } = Route.useParams();
+    const navigate = useNavigate();
+    const { user } = useSelector((state) => state.auth);
 
+    // Use react-query to fetch car details
+    const {
+        data: car,
+        isLoading,
+        isError,
+    } = useQuery({
+        queryKey: ["carDetail", id],
+        queryFn: () => getDetailCars(id),
+        enabled: !!id,
+    });
     // Use react-query to fetch car details
     const {
         data: car,
@@ -40,7 +55,26 @@ function CarDetail() {
             toast.error("Unable to delete");
         },
     });
+    const { mutate: deleteCarData } = useMutation({
+        mutationFn: () => deleteCar(id),
+        onSuccess: () => {
+            toast.success("Car deleted");
+            navigate({ to: "/" });
+        },
+        onError: () => {
+            toast.error("Unable to delete");
+        },
+    });
 
+    if (isLoading) {
+        return (
+            <Row className="mt-5">
+                <Col>
+                    <h1 className="text-center">Loading...</h1>
+                </Col>
+            </Row>
+        );
+    }
     if (isLoading) {
         return (
             <Row className="mt-5">
@@ -60,7 +94,35 @@ function CarDetail() {
             </Row>
         );
     }
+    if (isError || !car) {
+        return (
+            <Row className="mt-5">
+                <Col>
+                    <h1 className="text-center">Car not found!</h1>
+                </Col>
+            </Row>
+        );
+    }
 
+    const onDelete = async (event) => {
+        event.preventDefault();
+        confirmAlert({
+            title: "Confirm to delete",
+            message: "Are you sure to delete this car?",
+            buttons: [
+                {
+                    label: "Yes",
+                    onClick: () => {
+                        deleteCarData();
+                    },
+                },
+                {
+                    label: "No",
+                    onClick: () => {},
+                },
+            ],
+        });
+    };
     const onDelete = async (event) => {
         event.preventDefault();
         confirmAlert({
@@ -96,6 +158,10 @@ function CarDetail() {
                             <Card.Title className="border-bottom pb-2 border-secondary">
                                 {car?.plate || "Unknown Plate"}
                             </Card.Title>
+                            <Card.Text>
+                                <strong>Availabe:</strong>{" "}
+                                {car?.available ? <span className="mx-2 px-2 py-1 bg-success rounded text-white">Yes</span> : <span className="mx-2 px-2 py-1 bg-danger rounded text-white">No</span>} 
+                            </Card.Text>
                             <Card.Text>
                                 <strong>Model:</strong>{" "}
                                 {car?.models?.description || "N/A"}
@@ -150,6 +216,39 @@ function CarDetail() {
                                 )) || "N/A"}
                             </Card.Text>
 
+                            {user?.role_id === 1 && (
+                                <>
+                                    <Card.Text>
+                                        <div className="d-grid gap-2">
+                                            <Button
+                                                as={Link}
+                                                href={`/cars/edit/${id}`}
+                                                variant="primary"
+                                                size="md"
+                                            >
+                                                Edit Car
+                                            </Button>
+                                        </div>
+                                    </Card.Text>
+                                    <Card.Text>
+                                        <div className="d-grid gap-2">
+                                            <Button
+                                                onClick={onDelete}
+                                                variant="danger"
+                                                size="md"
+                                            >
+                                                Delete Car
+                                            </Button>
+                                        </div>
+                                    </Card.Text>
+                                </>
+                            )}
+                        </Card.Body>
+                    </Card>
+                </Col>
+            </Row>
+        </Container>
+    );
                             {user?.role_id === 1 && (
                                 <>
                                     <Card.Text>

@@ -14,36 +14,40 @@ const NavigationBar = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const { user, token } = useSelector((state) => state.auth);
+      const { user, token } = useSelector((state) => state.auth);
 
-    const handleLogout = useCallback(() => {
-        // delete the local storage here
-        dispatch(setUser(null));
-        dispatch(setToken(null));
+      const handleLogout = useCallback(() => {
+            // delete the local storage here
+            dispatch(setUser(null));
+            dispatch(setToken(null));
 
-        // redirect to login
-        navigate({ to: "/login" });
-    }, [dispatch, navigate]);
+            // redirect to login
+            navigate({ to: "/login" });
+        }, [dispatch, navigate]);
 
-    // Use react query to fetch API
-    const { data, isSuccess, isError } = useQuery({
-        queryKey: ["profile"],
-        queryFn: profile,
-        enabled: token ? true : false,
-    });
+        // Use react query to fetch API
+        const { data, isSuccess, isError } = useQuery({
+            queryKey: ["profile"],
+            queryFn: profile,
+            enabled: token ? true : false,
+        });
 
-    useEffect(() => {
-        if (isSuccess) {
-            dispatch(setUser(data));
-        } else if (isError) {
+        useEffect(() => {
+            if (isSuccess) {
+                dispatch(setUser(data));
+            } else if (isError) {
+                handleLogout();
+            }
+        }, [isSuccess, isError, data, dispatch, handleLogout]);
+
+        const logout = (event) => {
+            event.preventDefault();
             handleLogout();
-        }
-    }, [isSuccess, isError, data, dispatch, handleLogout]);
+        };
 
-    const logout = (event) => {
-        event.preventDefault();
-        handleLogout();
-    };
+    if (location.pathname === "/login" || location.pathname === "/register") {
+        return null;
+    }
 
     if (location.pathname === "/login" || location.pathname === "/register") {
         return null;
@@ -52,9 +56,6 @@ const NavigationBar = () => {
     return (
         <Navbar collapseOnSelect expand="lg" className="bg-body-tertiary">
             <Container>
-                <Navbar.Brand as={Link} to="/">
-                    Wakanda App
-                </Navbar.Brand>
                 <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                 <Navbar.Collapse id="responsive-navbar-nav">
                     <Nav className="me-auto">

@@ -15,10 +15,13 @@ const CarItem = ({ car }) => {
                 />
                 <Card.Body className="d-flex flex-column">
                     <Card.Title className="fs-5 bold-text mb-2">
-                        {car?.plate}
+                    <strong>{car?.plate}</strong> 
                     </Card.Title>
-                    <Card.Text className="text-muted flex-grow-1">
-                        {car?.models?.description || "No description available"}
+                    <Card.Text className="text-muted flex-grow-1">  
+                    <strong>Available:</strong> {car?.available ? <span className="mx-2 px-2 py-1 bg-success rounded text-white">Yes</span> : <span className="mx-2 px-2 py-1 bg-danger rounded text-white">No</span>} 
+                    </Card.Text>
+                    <Card.Text className="text-muted flex-grow-1" >
+                    <strong>{car?.models?.description || "No description available"}</strong> 
                     </Card.Text>
                     <Button
                     as={Link}
