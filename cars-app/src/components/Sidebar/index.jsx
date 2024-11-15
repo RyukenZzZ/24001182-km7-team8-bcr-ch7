@@ -43,7 +43,7 @@ const Sidebar = () => {
             <span className="sidebar-text">Cars</span>
           </Nav.Link>
         </Nav.Item>
-        
+
         <Nav.Item>
           <Nav.Link as={Link} to="/profile" className="text-white">
             <BiUser className="sidebar-icon" />
