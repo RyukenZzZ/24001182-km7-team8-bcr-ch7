@@ -94,6 +94,9 @@ function CarDetail() {
             <Card.Title className="border-bottom pb-2 border-secondary">
               {car?.plate || "Unknown Plate"}
             </Card.Title>
+            <Card.Text>  
+            <strong>Available:</strong> {car?.available ? <span className="mx-2 px-2 py-1 bg-success rounded text-white">Yes</span> : <span className="mx-2 px-2 py-1 bg-danger rounded text-white">No</span>} 
+            </Card.Text>
             <Card.Text>
               <strong>Model:</strong> {car?.models?.description || "N/A"}
             </Card.Text>

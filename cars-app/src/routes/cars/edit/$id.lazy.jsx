@@ -36,6 +36,8 @@ function EditCar() {
   const [currentImage, setCurrentImage] = useState(undefined)
   const [transmission, setTransmission] = useState('')
   const [year, setYear] = useState(0)
+  const [options, setOptions] = useState([])
+  const [specs, setSpecs] = useState([])
 
   const [modelId, setModelId] = useState(0)
   const [manufactureId, setManufactureId] = useState(0)
@@ -82,7 +84,7 @@ function EditCar() {
     mutationFn: (carData) => updateCar(id, carData),
     onSuccess: () => {
       toast.success('Car updated successfully')
-      navigate(`/`)
+      navigate({ to: '/' })
     },
     onError: (error) => {
       toast.error(error?.message || 'Failed to update car')
@@ -104,6 +106,8 @@ function EditCar() {
       image,
       transmission,
       year,
+      options,
+      specs,
     }
     updateCarMutation.mutate(request)
   }
@@ -123,6 +127,8 @@ function EditCar() {
       setCurrentImage(carQuery.data.image)
       setTransmission(carQuery.data.transmission)
       setYear(carQuery.data.year)
+      setOptions(carQuery.data.options)
+      setSpecs(carQuery.data.specs)
     }
   }, [carQuery.isSuccess, carQuery.data])
 
@@ -232,6 +238,34 @@ function EditCar() {
                     type="number"
                     value={year}
                     onChange={(event) => setYear(event.target.value)}
+                  />
+                </Col>
+              </Form.Group>
+
+              <Form.Group as={Row} className="mb-3" controlId="options">
+                <Form.Label column sm={3}>
+                  Options
+                </Form.Label>
+                <Col sm="9">
+                  <Form.Control
+                    type="text"
+                    placeholder="Options"
+                    value={options}
+                    onChange={(event) => setOptions(event.target.value)}
+                  />
+                </Col>
+              </Form.Group>
+
+              <Form.Group as={Row} className="mb-3" controlId="specs">
+                <Form.Label column sm={3}>
+                  Specs
+                </Form.Label>
+                <Col sm="9">
+                  <Form.Control
+                    type="text"
+                    placeholder="Specs"
+                    value={specs}
+                    onChange={(event) => setSpecs(event.target.value)}
                   />
                 </Col>
               </Form.Group>
