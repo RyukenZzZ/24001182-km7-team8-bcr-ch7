@@ -1,0 +1,28 @@
+.sidebar {
+    width: 80px; /* Adjust width to match the image */
+    min-height: 100vh;
+    background-color: #003399; /* Blue background color */
+  }
+  
+  .sidebar-icon {
+    font-size: 1.5rem; /* Adjust icon size */
+    display: block;
+    margin: 0 auto;
+  }
+  
+  .sidebar-text {
+    font-size: 0.75rem; /* Smaller text under icons */
+  }
+  
+  .nav-link {
+    padding: 1rem 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+  }
+  
+  .nav-link:hover {
+    background-color: #002366; /* Darker blue on hover */
+  }
+  
