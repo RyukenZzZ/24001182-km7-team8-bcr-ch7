@@ -12,9 +12,7 @@ export const Route = createRootRoute({
       <Sidebar />
       <div className="d-flex flex-column flex-grow-1">
         <NavigationBar />
-        <div className="p-3">
           <Outlet />
-        </div>
       </div>
       <TanStackRouterDevtools />
       <ToastContainer theme="colored" />
