@@ -6,6 +6,7 @@ import "react-confirm-alert/src/react-confirm-alert.css";
 import UserNavbar from "../components/Navbar/userNavbar";
 import NavigationBar from "../components/Navbar";
 import { useSelector } from "react-redux";
+import Sidebar from "../components/Sidebar";
 
 export const Route = createRootRoute({
   component: RootComponent,
@@ -16,17 +17,18 @@ function RootComponent() {
 
   return (
     <>
-      {/* Conditional Navbar */}
-      {user?.role_id === 1 ? <NavigationBar /> : <UserNavbar />}
-
-      {/* Outlet for rendering child routes */}
-      <Outlet />
-
-      {/* Debugging Router */}
-      <TanStackRouterDevtools />
-
-      {/* React Toastify */}
-      <ToastContainer theme="colored" />
+      <div className="d-flex">
+        <Sidebar />
+        <div className="d-flex flex-column flex-grow-1">
+          {/* Conditional Navbar */}
+          {user?.role_id === 1 ? <NavigationBar /> : <UserNavbar />}{" "}
+          <div className="p-3">
+            <Outlet />
+          </div>
+        </div>
+        <TanStackRouterDevtools />
+        <ToastContainer theme="colored" />
+      </div>
     </>
   );
 }
