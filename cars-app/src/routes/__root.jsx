@@ -36,6 +36,7 @@ function RootComponent() {
           </div>
         </div>
       )}
+
       {/* Shared Components */}
       <TanStackRouterDevtools />
       <ToastContainer theme="colored" />

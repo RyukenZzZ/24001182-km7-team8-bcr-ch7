@@ -29,7 +29,6 @@ function CarDetail() {
         queryFn: () => getDetailCars(id),
         enabled: !!id,
     });
-
     const { mutate: deleteCarData } = useMutation({
         mutationFn: () => deleteCar(id),
         onSuccess: () => {
@@ -40,7 +39,6 @@ function CarDetail() {
             toast.error("Unable to delete");
         },
     });
-
     if (isLoading) {
         return (
             <Row className="mt-5">
@@ -50,7 +48,6 @@ function CarDetail() {
             </Row>
         );
     }
-
     if (isError || !car) {
         return (
             <Row className="mt-5">
@@ -98,7 +95,15 @@ function CarDetail() {
                             </Card.Title>
                             <Card.Text>
                                 <strong>Availabe:</strong>{" "}
-                                {car?.available ? <span className="mx-2 px-2 py-1 bg-success rounded text-white">Yes</span> : <span className="mx-2 px-2 py-1 bg-danger rounded text-white">No</span>} 
+                                {car?.available ? (
+                                    <span className="mx-2 px-2 py-1 bg-success rounded text-white">
+                                        Yes
+                                    </span>
+                                ) : (
+                                    <span className="mx-2 px-2 py-1 bg-danger rounded text-white">
+                                        No
+                                    </span>
+                                )}
                             </Card.Text>
                             <Card.Text>
                                 <strong>Model:</strong>{" "}
@@ -153,7 +158,6 @@ function CarDetail() {
                                     </span>
                                 )) || "N/A"}
                             </Card.Text>
-
                             {user?.role_id === 1 && (
                                 <>
                                     <Card.Text>

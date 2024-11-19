@@ -7,7 +7,7 @@ import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Image from "react-bootstrap/Image";
 import { useDispatch, useSelector } from "react-redux";
-import { setToken } from "../redux/slices/auth";
+import { setToken,setUser } from "../redux/slices/auth";
 import { login } from "../service/auth";
 import { toast } from "react-toastify";
 import { useMutation } from "@tanstack/react-query";
@@ -46,6 +46,8 @@ function Login() {
             const roleId = data?.user?.role_id;
 
             dispatch(setToken(data?.token));
+            dispatch(setUser(data?.user));
+
 
             // Check user role and navigate
             if (roleId === 1) {
