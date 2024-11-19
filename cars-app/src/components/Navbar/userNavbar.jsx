@@ -47,7 +47,7 @@ const UserNavbar = () => {
   }
 
   return (
-    <Navbar bg="navbar" expand="lg" fixed="top" className="bg-light">
+    <Navbar bg="navbar" expand="lg" className="bg-white"> {/*fixed nya ngalangin yg belakang, blum tau cara fix nya wkwk*/}
       <Container>
         <Navbar.Brand as={Link} to="/" className="bg-primary px-3 text-white">
           LOGO
@@ -80,7 +80,7 @@ const UserNavbar = () => {
             <Nav>
               {user ? (
                 <>
-                  <Nav.Link as={Link} to="/profile">
+                  <Nav.Link as={Link} to="/profile" className="d-inline">
                     <Image
                       src={user?.profile_picture}
                       fluid
@@ -92,7 +92,7 @@ const UserNavbar = () => {
                         borderRadius: "50%",
                       }}
                     />{" "}
-                    {user?.name}
+                    <span className="px-2">{user?.name}</span>
                   </Nav.Link>
                   <Nav.Link onClick={logout}>Logout</Nav.Link>
                 </>

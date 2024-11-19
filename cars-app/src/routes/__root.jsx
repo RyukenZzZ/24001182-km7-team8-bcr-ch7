@@ -21,10 +21,8 @@ function RootComponent() {
         <Sidebar />
         <div className="d-flex flex-column flex-grow-1">
           {/* Conditional Navbar */}
-          {user?.role_id === 1 ? <NavigationBar /> : <UserNavbar />}{" "}
-          <div className="p-3">
+          {user?.role_id === 1 ? <NavigationBar /> : <UserNavbar />}
             <Outlet />
-          </div>
         </div>
         <TanStackRouterDevtools />
         <ToastContainer theme="colored" />
