@@ -5,6 +5,7 @@ import { getCars } from "../service/car/index";
 import carsImage from "../assets/img_car.png";
 import Protected from "../components/Auth/Protected";
 
+
 export const Route = createLazyFileRoute("/cars")({
   component: () => (
     <Protected roles={[1,2]}>
@@ -39,7 +40,7 @@ function CarsFilter() {
     // Validasi input required
     const isValid = [...form.elements].every((input) => {
       if (input.required) {
-        return input.value.trim() !== ""; // Pastikan nilai tidak kosong atau hanya spasi
+        return input.value.trim() !== ""; 
       }
       return true;
     });
@@ -175,6 +176,7 @@ function CarsFilter() {
       </Container>
 
       {/* Display Search Results Section */}
+      <Container className="my-4" >
       <Row className="g-3" id="result-content">
         {loading ? (
           <h5 className="text-center">Memuat data...</h5>
@@ -182,7 +184,7 @@ function CarsFilter() {
           <h5 className="text-center">Hasil pencarian belum ada.</h5>
         ) : (
           filteredCars.map((car) => (
-            <Col md={4} key={car.id}>
+            <Col md={4} key={car.id} className="d-flex justify-content-center">
                           <Card
                 style={{ width: "100%", maxWidth: "18rem" }}
                 className="h-100 shadow border-0"
@@ -217,6 +219,7 @@ function CarsFilter() {
           ))
         )}
       </Row>
+      </Container>
     </>
   );
 }

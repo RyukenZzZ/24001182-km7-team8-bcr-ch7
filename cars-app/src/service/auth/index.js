@@ -57,3 +57,25 @@ export const profile = async () => {
 
   return result?.data;
 };
+
+export const google = async (accessToken) => {
+  const body = { access_token: accessToken };
+  const response = await fetch(
+    `${import.meta.env.VITE_API_URL}/auth/google/login`,
+    {
+      body: JSON.stringify(body),
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  // get the data if fetching succeed!
+  const result = await response.json();
+  if (!result?.success) {
+    throw new Error(result?.message);
+  }
+
+  return result?.data;
+};

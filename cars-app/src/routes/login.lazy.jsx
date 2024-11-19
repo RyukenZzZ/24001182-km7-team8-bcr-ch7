@@ -8,10 +8,11 @@ import Row from "react-bootstrap/Row";
 import Image from "react-bootstrap/Image";
 import { useDispatch, useSelector } from "react-redux";
 import { setToken,setUser } from "../redux/slices/auth";
-import { login } from "../service/auth";
+import { login, google } from "../service/auth";
 import { toast } from "react-toastify";
 import { useMutation } from "@tanstack/react-query";
 import carsImage from "../assets/login-cars.png";
+import { useGoogleLogin } from '@react-oauth/google';
 
 export const Route = createLazyFileRoute("/login")({
     component: Login,
@@ -63,19 +64,34 @@ function Login() {
             toast.error(error?.message);
         },
     });
+
+    const { mutate: loginWithGoogle } = useMutation({
+        mutationFn: (accessToken) => google(accessToken), 
+        onSuccess: (data) => {
+            dispatch(setToken(data?.token));
+            navigate({ to: "/" });
+        },
+        onError: (err) => {
+            toast.error(err?.message || "Google login failed. Please try again.");
+        },
+    });
+
     const onSubmit = async (event) => {
         event.preventDefault();
-
-        /* hit the login API */
-        // define the request body
         const body = {
             email,
             password,
         };
 
-        // hit the login API with the data
         loginUser(body);
     };
+
+    const googleLogin = useGoogleLogin({
+        onSuccess: (tokenResponse) => {
+            loginWithGoogle(tokenResponse.access_token);
+        },
+        onError: (err) => console.log(err),
+    });
 
     return (
         <Row className="vw-100 vh-100 d-flex align-items-center justify-content-center" fixed="top">
@@ -132,6 +148,11 @@ function Login() {
                                     Login
                                 </Button>
                                 <p>Don{"`"}t have an account? <Link to={"/register"} className="text-decoration-none">Register</Link></p>
+                            </div>
+                            <div className="d-grid gap-2 mt-5">
+                                <Button onClick={googleLogin} variant="primary" disabled={isPending}>
+                                    Login with Google
+                                </Button>
                             </div>
                         </Form>
                     </Card.Body>

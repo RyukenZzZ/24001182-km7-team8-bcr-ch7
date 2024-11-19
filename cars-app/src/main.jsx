@@ -4,7 +4,7 @@ import { RouterProvider, createRouter } from "@tanstack/react-router";
 import {Provider} from "react-redux";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { store } from "./redux/store";
-import 'bootstrap/dist/css/bootstrap.min.css'; // To apply the boostrap styling
+import 'bootstrap/dist/css/bootstrap.min.css'; 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 
