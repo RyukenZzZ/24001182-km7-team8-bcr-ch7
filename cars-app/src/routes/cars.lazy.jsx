@@ -176,6 +176,7 @@ function CarsFilter() {
       </Container>
 
       {/* Display Search Results Section */}
+      <Container className="my-4" >
       <Row className="g-3" id="result-content">
         {loading ? (
           <h5 className="text-center">Memuat data...</h5>
@@ -183,7 +184,7 @@ function CarsFilter() {
           <h5 className="text-center">Hasil pencarian belum ada.</h5>
         ) : (
           filteredCars.map((car) => (
-            <Col md={4} key={car.id}>
+            <Col md={4} key={car.id} className="d-flex justify-content-center">
                           <Card
                 style={{ width: "100%", maxWidth: "18rem" }}
                 className="h-100 shadow border-0"
@@ -218,6 +219,7 @@ function CarsFilter() {
           ))
         )}
       </Row>
+      </Container>
     </>
   );
 }
