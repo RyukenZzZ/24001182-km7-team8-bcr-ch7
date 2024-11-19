@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import Container from "react-bootstrap/Container"
+import Container from "react-bootstrap/Container";
 import { getCars } from "../service/car";
 import { getModels } from "../service/model";
 import { getManufactures } from "../service/manufacture";
@@ -13,14 +13,19 @@ import ModelItem from "../components/Model/ModelItem";
 import ManufactureItem from "../components/Manufacture/manufacturesItem";
 import TypeCard from "../components/Type/TypeCard";
 import { useQuery } from "@tanstack/react-query";
+import CarSidebar from "../components/CarSidebar";
 
 export const Route = createLazyFileRoute("/")({
-    component: Index,
-});
+    component:()=>(
+        <div className="d-flex bg-body-tertiary">
+            <CarSidebar />
+            <Index className="flex-grow-1" />
+        </div>
+)});
 
 function Index() {
-    const { token } = useSelector((state) => state.auth);
-    const [selectedData, setSelectedData] = useState("cars");
+    const { token, path } = useSelector((state) => state.auth);
+    const [selectedData, setSelectedData] = useState(path);
 
     const [cars, setCars] = useState([]);
     const [models, setModels] = useState([]);
@@ -85,6 +90,10 @@ function Index() {
         typesSuccess,
     ]);
 
+    useEffect(() => {
+        setSelectedData(path);
+    }, [path]);
+    
     const isLoading =
         carsPending || modelsPending || manufacturesPending || typesPending;
 
@@ -114,33 +123,6 @@ function Index() {
         <Container>
             <Row className="mt-4">
                 <Col>
-                    <h1 className="text-primary">Data Selection</h1>
-                    <div className="mb-4">
-                        <button
-                            className="btn btn-outline-success ms-2"
-                            onClick={() => setSelectedData("cars")}
-                        >
-                            Show Cars
-                        </button>
-                        <button
-                            className="btn btn-outline-secondary ms-2"
-                            onClick={() => setSelectedData("models")}
-                        >
-                            Show Models
-                        </button>
-                        <button
-                            className="btn btn-outline-secondary ms-2"
-                            onClick={() => setSelectedData("manufactures")}
-                        >
-                            Show Manufactures
-                        </button>
-                        <button
-                            className="btn btn-outline-secondary ms-2"
-                            onClick={() => setSelectedData("types")}
-                        >
-                            Show Types
-                        </button>
-                    </div>
 
                     {selectedData === "cars" && (
                         <div>

@@ -1,4 +1,4 @@
-import { Link, useNavigate,useLocation } from "@tanstack/react-router";
+import { Link, useNavigate, useLocation } from "@tanstack/react-router";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import Container from "react-bootstrap/Container";
@@ -14,47 +14,43 @@ const NavigationBar = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-      const { user, token } = useSelector((state) => state.auth);
+    const { user, token } = useSelector((state) => state.auth);
 
-      const handleLogout = useCallback(() => {
-            // delete the local storage here
-            dispatch(setUser(null));
-            dispatch(setToken(null));
+    const handleLogout = useCallback(() => {
+        // delete the local storage here
+        dispatch(setUser(null));
+        dispatch(setToken(null));
 
-            // redirect to login
-            navigate({ to: "/login" });
-        }, [dispatch, navigate]);
+        // redirect to login
+        navigate({ to: "/login" });
+    }, [dispatch, navigate]);
 
-        // Use react query to fetch API
-        const { data, isSuccess, isError } = useQuery({
-            queryKey: ["profile"],
-            queryFn: profile,
-            enabled: token ? true : false,
-        });
+    // Use react query to fetch API
+    const { data, isSuccess, isError } = useQuery({
+        queryKey: ["profile"],
+        queryFn: profile,
+        enabled: token ? true : false,
+    });
 
-        useEffect(() => {
-            if (isSuccess) {
-                dispatch(setUser(data));
-            } else if (isError) {
-                handleLogout();
-            }
-        }, [isSuccess, isError, data, dispatch, handleLogout]);
-
-        const logout = (event) => {
-            event.preventDefault();
+    useEffect(() => {
+        if (isSuccess) {
+            dispatch(setUser(data));
+        } else if (isError) {
             handleLogout();
-        };
+        }
+    }, [isSuccess, isError, data, dispatch, handleLogout]);
 
-    if (location.pathname === "/login" || location.pathname === "/register") {
-        return null;
-    }
+    const logout = (event) => {
+        event.preventDefault();
+        handleLogout();
+    };
 
     if (location.pathname === "/login" || location.pathname === "/register") {
         return null;
     }
 
     return (
-        <Navbar collapseOnSelect expand="lg" className="bg-body-tertiary">
+        <Navbar collapseOnSelect expand="lg" className="bg-white shadow-sm">
             <Container>
                 <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                 <Navbar.Collapse id="responsive-navbar-nav">
