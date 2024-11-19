@@ -7,8 +7,8 @@ import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Image from "react-bootstrap/Image";
 import { useDispatch, useSelector } from "react-redux";
-import { setToken } from "../redux/slices/auth";
-import { google,login } from "../service/auth";
+import { setToken,setUser } from "../redux/slices/auth";
+import { login, google } from "../service/auth";
 import { toast } from "react-toastify";
 import { useMutation } from "@tanstack/react-query";
 import carsImage from "../assets/login-cars.png";
@@ -22,22 +22,43 @@ function Login() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const { token } = useSelector((state) => state.auth);
+    const { token,user } = useSelector((state) => state.auth);
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
+
+
     if (token) {
-        navigate({ to: "/" });
+        if (user?.role_id === 2) {
+            navigate({ to: "/" });
+        } else if (user?.role_id === 1) {
+            navigate({ to: "/admin/dashboard" });
+        }
     }
+    
 
     const { mutate: loginUser,isPending } = useMutation({
         mutationFn: (body) => {
             return login(body);
         },
         onSuccess: (data) => {
+            // Save token in state
+            const roleId = data?.user?.role_id;
+
             dispatch(setToken(data?.token));
-            navigate({ to: "/" });
+            dispatch(setUser(data?.user));
+
+
+            // Check user role and navigate
+            if (roleId === 1) {
+                console.log("Navigating to Admin Dashboard");
+                navigate({ to: "/admin/dashboard" });
+                return;
+            } else if (roleId === 2){
+                navigate({ to: "/" });
+                return;
+            }
         },
         onError: (error) => {
             toast.error(error?.message);
@@ -45,15 +66,13 @@ function Login() {
     });
 
     const { mutate: loginWithGoogle } = useMutation({
-        mutationFn: (accessToken) => {
-            return google(accessToken);
-        },
+        mutationFn: (accessToken) => google(accessToken), 
         onSuccess: (data) => {
             dispatch(setToken(data?.token));
             navigate({ to: "/" });
         },
         onError: (err) => {
-            toast.error(err?.message);
+            toast.error(err?.message || "Google login failed. Please try again.");
         },
     });
 
@@ -75,7 +94,7 @@ function Login() {
     });
 
     return (
-        <Row className="vw-100 vh-100 d-flex align-items-center justify-content-center">
+        <Row className="vw-100 vh-100 d-flex align-items-center justify-content-center" fixed="top">
             <Col className="col-md-9 h-100">
                 <Image src={carsImage} className="img-fluid h-100" style={{objectFit: "cover"}}/>
             </Col>

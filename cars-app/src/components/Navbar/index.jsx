@@ -1,4 +1,4 @@
-import { Link, useNavigate,useLocation } from "@tanstack/react-router";
+import { Link, useNavigate, useLocation } from "@tanstack/react-router";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import Container from "react-bootstrap/Container";
@@ -50,12 +50,12 @@ const NavigationBar = () => {
     }
 
     return (
-        <Navbar collapseOnSelect expand="lg" className="bg-body-tertiary">
+        <Navbar collapseOnSelect expand="lg" className="bg-white shadow-sm">
             <Container>
                 <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                 <Navbar.Collapse id="responsive-navbar-nav">
                     <Nav className="me-auto">
-                        <Nav.Link as={Link} to="/">
+                        <Nav.Link as={Link} to="/admin/dashboard">
                             Home
                         </Nav.Link>
                         {user && user?.role_id === 1 && (
@@ -85,7 +85,7 @@ const NavigationBar = () => {
                     <Nav>
                         {user ? (
                             <>
-                                <Nav.Link as={Link} to="/profile">
+                                <Nav.Link as={Link} to="/profile" className="d-inline">
                                     <Image
                                         src={user?.profile_picture}
                                         fluid
@@ -97,7 +97,7 @@ const NavigationBar = () => {
                                             borderRadius: "50%",
                                         }}
                                     />{" "}
-                                    {user?.name}
+                                    <span className="px-2">{user?.name}</span>
                                 </Nav.Link>
                                 <Nav.Link onClick={logout}>Logout</Nav.Link>
                             </>

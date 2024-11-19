@@ -7,22 +7,20 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Image from "react-bootstrap/Image";
 import Container from "react-bootstrap/Container";
-import { getModels } from "../../../service/model";
-import { getManufactures } from "../../../service/manufacture";
-import { getTypes } from "../../../service/type";
-import { getCarById, updateCar } from "../../../service/car";
+import { getModels } from "../../../../service/model";
+import { getManufactures } from "../../../../service/manufacture";
+import { getTypes } from "../../../../service/type";
+import { getCarById, updateCar } from "../../../../service/car";
 import { toast } from "react-toastify";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import Protected from "../../../components/Auth/Protected";
-
-export const Route = createLazyFileRoute("/cars/edit/$id")({
+import Protected from "../../../../components/Auth/Protected";
+export const Route = createLazyFileRoute("/admin/cars/edit/$id")({
     component: () => (
         <Protected roles={[1]}>
             <EditCar />
         </Protected>
     ),
 });
-
 function EditCar() {
     const { id } = Route.useParams();
     const navigate = useNavigate();
@@ -43,21 +41,20 @@ function EditCar() {
     const [modelId, setModelId] = useState(0);
     const [manufactureId, setManufactureId] = useState(0);
     const [typeId, setTypeId] = useState(0);
-
     // Fetch models, manufactures, and types using useQuery
     const modelsQuery = useQuery({
         queryKey: ["models"],
-        queryFn: getModels,
+        queryFn: ()=>getModels(),
     });
 
     const manufacturesQuery = useQuery({
         queryKey: ["manufactures"],
-        queryFn: getManufactures,
+        queryFn: ()=>getManufactures(),
     });
 
     const typesQuery = useQuery({
         queryKey: ["types"],
-        queryFn: getTypes,
+        queryFn: ()=>getTypes(),
     });
 
     // Fetch car details by id using useQuery
@@ -82,17 +79,36 @@ function EditCar() {
             setSpecs(data.specs);
         },
     });
-
     const updateCarMutation = useMutation({
         mutationFn: (carData) => updateCar(id, carData),
         onSuccess: () => {
             toast.success("Car updated successfully");
-            navigate({ to: "/" });
+            navigate({ to: `/admin/cars/${id}` });
         },
         onError: (error) => {
             toast.error(error?.message || "Failed to update car");
         },
     });
+
+    const handleAddOption = () => {
+        setOptions([...options, ""]); // Menambahkan opsi baru kosong
+    };
+
+    const handleOptionChange = (index, value) => {
+        const newOptions = [...options];
+        newOptions[index] = value;
+        setOptions(newOptions);
+    };
+
+    const handleAddSpec = () => {
+        setSpecs([...specs, ""]); // Menambahkan spesifikasi baru kosong
+    };
+
+    const handleSpecChange = (index, value) => {
+        const newSpecs = [...specs];
+        newSpecs[index] = value;
+        setSpecs(newSpecs);
+    };
 
     const onSubmit = (event) => {
         event.preventDefault();
@@ -143,7 +159,6 @@ function EditCar() {
     ) {
         return <div>Loading...</div>;
     }
-
     return (
         <Container>
             <Row className="mt-5">
@@ -173,7 +188,6 @@ function EditCar() {
                                         />
                                     </Col>
                                 </Form.Group>
-
                                 <Form.Group
                                     as={Row}
                                     className="mb-3"
@@ -195,7 +209,6 @@ function EditCar() {
                                         />
                                     </Col>
                                 </Form.Group>
-
                                 <Form.Group
                                     as={Row}
                                     className="mb-3"
@@ -216,7 +229,6 @@ function EditCar() {
                                         />
                                     </Col>
                                 </Form.Group>
-
                                 <Form.Group
                                     as={Row}
                                     className="mb-3"
@@ -330,14 +342,27 @@ function EditCar() {
                                         Options
                                     </Form.Label>
                                     <Col sm="9">
-                                        <Form.Control
-                                            type="text"
-                                            placeholder="Options"
-                                            value={options}
-                                            onChange={(event) =>
-                                                setOptions(event.target.value)
-                                            }
-                                        />
+                                        {options.map((option, index) => (
+                                            <div key={index} className="mb-2">
+                                                <Form.Control
+                                                    type="text"
+                                                    placeholder={`Option ${index + 1}`}
+                                                    value={option}
+                                                    onChange={(e) =>
+                                                        handleOptionChange(
+                                                            index,
+                                                            e.target.value
+                                                        )
+                                                    }
+                                                />
+                                            </div>
+                                        ))}
+                                        <Button
+                                            variant="secondary"
+                                            onClick={handleAddOption}
+                                        >
+                                            Add Option
+                                        </Button>
                                     </Col>
                                 </Form.Group>
 
@@ -347,17 +372,30 @@ function EditCar() {
                                     controlId="specs"
                                 >
                                     <Form.Label column sm={3}>
-                                        Specs
+                                        Specifications
                                     </Form.Label>
                                     <Col sm="9">
-                                        <Form.Control
-                                            type="text"
-                                            placeholder="Specs"
-                                            value={specs}
-                                            onChange={(event) =>
-                                                setSpecs(event.target.value)
-                                            }
-                                        />
+                                        {specs.map((spec, index) => (
+                                            <div key={index} className="mb-2">
+                                                <Form.Control
+                                                    type="text"
+                                                    placeholder={`Specification ${index + 1}`}
+                                                    value={spec}
+                                                    onChange={(e) =>
+                                                        handleSpecChange(
+                                                            index,
+                                                            e.target.value
+                                                        )
+                                                    }
+                                                />
+                                            </div>
+                                        ))}
+                                        <Button
+                                            variant="secondary"
+                                            onClick={handleAddSpec}
+                                        >
+                                            Add Specification
+                                        </Button>
                                     </Col>
                                 </Form.Group>
 
@@ -396,7 +434,7 @@ function EditCar() {
                                 <div className="d-grid gap-2">
                                     <Button
                                         type="submit"
-                                        disabled={updateCarMutation.isLoading}
+                                        disabled={updateCarMutation.isPending}
                                         variant="primary"
                                     >
                                         Update Car

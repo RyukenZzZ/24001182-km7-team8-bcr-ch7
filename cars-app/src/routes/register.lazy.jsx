@@ -22,7 +22,7 @@ function Register() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const { token } = useSelector((state) => state.auth);
+    const { token,user } = useSelector((state) => state.auth);
 
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
@@ -31,7 +31,11 @@ function Register() {
     const [profilePicture, setProfilePicture] = useState(undefined);
 
     if (token) {
-        navigate({ to: "/" });
+        if (user?.role_id === 2) {
+            navigate({ to: "/" });
+        } else if (user?.role_id === 1) {
+            navigate({ to: "/admin/dashboard" });
+        }
     }
 
     const { mutate: registerUser,isPending } = useMutation({
@@ -40,7 +44,11 @@ function Register() {
         },
         onSuccess: (data) => {
             dispatch(setToken(data?.token));
-            navigate({ to: "/" });
+            if (user?.role_id === 2) {
+                navigate({ to: "/" });
+            } else if (user?.role_id === 1) {
+                navigate({ to: "/admin/dashboard" });
+            }
         },
         onError: (error) => {
             toast.error(error?.message);

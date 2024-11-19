@@ -7,15 +7,15 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Image from "react-bootstrap/esm/Image";
 import Container from "react-bootstrap/Container";
-import { getManufactures } from "../../service/manufacture";
-import { getModels } from "../../service/model";
-import { getTypes } from "../../service/type";
-import { createCar } from "../../service/car";
-import Protected from "../../components/Auth/Protected";
+import { getManufactures } from "../../../service/manufacture";
+import { getModels } from "../../../service/model";
+import { getTypes } from "../../../service/type";
+import { createCar } from "../../../service/car";
+import Protected from "../../../components/Auth/Protected";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
-export const Route = createLazyFileRoute("/cars/create")({
+export const Route = createLazyFileRoute("/admin/cars/create")({
     component: () => (
         <Protected roles={[1]}>
             <CreateCar />
@@ -46,7 +46,7 @@ function CreateCar() {
         mutationFn: (request) => createCar(request),
         onSuccess: () => {
             toast.success("New car created");
-            navigate({ to: "/" });
+            navigate({ to: "/admin/dashboard" });
         },
     });
 

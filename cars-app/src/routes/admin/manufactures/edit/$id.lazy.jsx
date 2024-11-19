@@ -7,43 +7,51 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Image from "react-bootstrap/Image";
 import Container from "react-bootstrap/Container";
-import { createManufacture } from "../../service/manufacture";
-import Protected from "../../components/Auth/Protected";
-import { useMutation } from "@tanstack/react-query";
+import {
+    getManufacturesById,
+    updateManufacture,
+} from "../../../../service/manufacture";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
-export const Route = createLazyFileRoute("/manufactures/createManufactures")({
-    component: () => (
-        <Protected roles={[1]}>
-            <CreateManufacture />
-        </Protected>
-    ),
+export const Route = createLazyFileRoute("/admin/manufactures/edit/$id")({
+    component: EditManufacture,
 });
 
-function CreateManufacture() {
+function EditManufacture() {
+    const { id } = Route.useParams();
     const navigate = useNavigate();
+
+    const {
+        data: manufactureData,
+        isSuccess,
+        isPending,
+    } = useQuery({
+        queryKey: ["manufactures", id],
+        queryFn: () => getManufacturesById(id),
+    });
 
     const [name, setName] = useState("");
     const [logo, setLogo] = useState(undefined);
-    const [currentLogo, setCurrentLogo] = useState(undefined);
+    const [currentLogo, setCurrentLogo] = useState(
+        manufactureData?.logo || undefined
+    );
 
-    const { mutate: createManufactureData, isPending } = useMutation({
-        mutationFn: (request) => createManufacture(request),
-        onSuccess: () => {
-            toast.success("New manufacture created");
-            navigate({ to: "/" });
-        },
-    });
+    const { mutate: updateManufactureData, isPending: updatePending } =
+        useMutation({
+            mutationFn: (body) => updateManufacture(id, body),
+            onSuccess: () => {
+                toast.success("Manufacture updated");
+                navigate({ to: `/admin/manufactures/${id}` });
+            },
+        });
     useEffect(() => {
-        if (logo) {
-            const reader = new FileReader();
-            reader.onload = () => {
-                setCurrentLogo(reader.result);
-            };
-            reader.readAsDataURL(logo);
+        if (isSuccess) {
+            setName(manufactureData.name);
+            setLogo(manufactureData.logo);
+            setCurrentLogo(manufactureData.logo);
         }
-    }, [logo]);
-
+    }, [manufactureData, isSuccess]);
     const onSubmit = async (event) => {
         event.preventDefault();
 
@@ -51,8 +59,19 @@ function CreateManufacture() {
             name,
             logo,
         };
-        createManufactureData(request);
+
+        updateManufactureData(request);
     };
+
+    if (isPending) {
+        return (
+            <Row className="mt-5">
+                <Col>
+                    <h1 className="text-center">Loading...</h1>
+                </Col>
+            </Row>
+        );
+    }
 
     return (
         <Container>
@@ -60,9 +79,9 @@ function CreateManufacture() {
                 <Col md={6}>
                     <Card>
                         <Card.Body>
-                            <Card.Title>Create a new manufacture</Card.Title>
+                            <Card.Title>Edit Manufacture</Card.Title>
                             <Form onSubmit={onSubmit}>
-                                <Form.Group className="mb-3" controlId="email">
+                                <Form.Group className="mb-3" controlId="name">
                                     <Form.Label>Name</Form.Label>
                                     <Form.Control
                                         type="text"
@@ -84,7 +103,6 @@ function CreateManufacture() {
                                         <Form.Control
                                             type="file"
                                             placeholder="Choose File"
-                                            required
                                             onChange={(event) => {
                                                 setLogo(event.target.files[0]);
                                                 setCurrentLogo(
@@ -107,13 +125,12 @@ function CreateManufacture() {
                                         <Image src={currentLogo} fluid />
                                     </Col>
                                 </Form.Group>
-
                                 <Button
                                     variant="primary"
                                     type="submit"
-                                    disabled={isPending}
+                                    disabled={updatePending}
                                 >
-                                    Submit
+                                    Save Changes
                                 </Button>
                             </Form>
                         </Card.Body>
@@ -123,3 +140,5 @@ function CreateManufacture() {
         </Container>
     );
 }
+
+export default EditManufacture;
