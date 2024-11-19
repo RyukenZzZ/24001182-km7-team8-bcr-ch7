@@ -3,10 +3,15 @@ import { useState, useEffect } from "react";
 import { Container, Button, Row, Col, Form, Card } from "react-bootstrap";
 import { getCars } from "../service/car/index";
 import carsImage from "../assets/img_car.png";
+import Protected from "../components/Auth/Protected";
 
 
 export const Route = createLazyFileRoute("/cars")({
-  component: CarsFilter,
+  component: () => (
+    <Protected roles={[1,2]}>
+        <CarsFilter />
+    </Protected>
+),
 });
 
 function CarsFilter() {
@@ -179,68 +184,36 @@ function CarsFilter() {
         ) : (
           filteredCars.map((car) => (
             <Col md={4} key={car.id}>
-              <Card className="shadow-sm">
+                          <Card
+                style={{ width: "100%", maxWidth: "18rem" }}
+                className="h-100 shadow border-0"
+            >
                 <Card.Img
-                  variant="top"
-                  src={car.image}
-                  alt={car.manufactures.name}
-                  style={{ height: "200px", objectFit: "cover" }}
+                    variant="top"
+                    src={car?.image}
+                    style={{ height: "200px", objectFit: "cover" }}
                 />
-                <Card.Body>
-                  <Card.Title className="border-bottom pb-2 border-secondary">
-                    {car?.plate || "Unknown Plate"}
-                  </Card.Title>
-                  <Card.Text>
-                    <strong>Availabe:</strong>{" "}
-                    {car?.available ? (
-                      <span className="mx-2 px-2 py-1 bg-success rounded text-white">
-                        Yes
-                      </span>
-                    ) : (
-                      <span className="mx-2 px-2 py-1 bg-danger rounded text-white">
-                        No
-                      </span>
-                    )}
-                  </Card.Text>
-                  <Card.Text>
-                    <strong>Model:</strong> {car?.models?.description || "N/A"}
-                  </Card.Text>
-                  <Card.Text>
-                    <strong>Year:</strong> {car?.year || "N/A"}
-                  </Card.Text>
-                  <Card.Text>
-                    <strong>Description:</strong> {car?.description || "N/A"}
-                  </Card.Text>
-                  <Card.Text>
-                    <strong>Type:</strong> {car?.types?.name || "N/A"}
-                  </Card.Text>
-                  <Card.Text>
-                    <strong>Rent per Day:</strong> ${car?.rentPerDay || "N/A"}
-                  </Card.Text>
-                  <Card.Text>
-                    <strong>Capacity:</strong> {car?.capacity || "N/A"}
-                  </Card.Text>
-                  <Card.Text>
-                    <strong>Manufacture:</strong>{" "}
-                    {car?.manufactures?.name || "N/A"}
-                  </Card.Text>
-                  <Card.Text>
-                    <strong>Transmission:</strong> {car?.transmission || "N/A"}
-                  </Card.Text>
-                  <Card.Text>
-                    <strong>Specs:</strong>{" "}
-                    {car?.specs?.map((spec) => (
-                      <span
-                        key={spec}
-                        className="mx-2 px-2 py-1 bg-success rounded text-white"
-                      >
-                        {spec}
-                      </span>
-                    )) || "N/A"}
-                  </Card.Text>
-                  <Button variant="primary">Pilih Mobil</Button>
+                <Card.Body className="d-flex flex-column">
+                    <Card.Text className="fs-6 fw-semibold mb-2">
+                        {car?.plate}
+                    </Card.Text>
+                    <Card.Text className="fs-5 fw-bold flex-grow-1 mb-2">
+                        Rp. {car.rentPerDay} / day
+                    </Card.Text>
+                    <Card.Text className="fs-6 fw-semibold text-muted mb-2">
+                        Available :{" "}
+                        <span
+                            className={`fw-bold ${car.available ? "bg-success" : "bg-danger"} px-2 py-1 rounded text-white`}
+                        >
+                            {car.available ? "Yes" : "No"}
+                        </span>
+                    </Card.Text>
+                    <Card.Text className="fs-6 fw-semibold text-muted flex-grow-1">
+                        Available at : {car.availableAt.split("T")[0]}
+                    </Card.Text>
+                    <Button variant="primary">Pilih Mobil</Button>
                 </Card.Body>
-              </Card>
+            </Card>
             </Col>
           ))
         )}
