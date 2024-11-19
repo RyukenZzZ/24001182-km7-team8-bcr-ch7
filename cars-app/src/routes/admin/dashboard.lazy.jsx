@@ -123,8 +123,8 @@ useEffect(()=>{
         <Col>
           {selectedData === 'cars' && (
             <div>
-              <div className='d-flex align-items-center mb-3'>
-                <h2 className='px-3'>Cars</h2>
+              <div className='d-flex align-items-center justify-content-between px-3 mb-3'>
+                <h2>Cars</h2>
                 <Button as={Link} to="/admin/cars/create" variant='primary' className='text-white px-2 py-1 ms-2 rounded'>Create New</Button>
               </div>
               {cars.length > 0 ? (
