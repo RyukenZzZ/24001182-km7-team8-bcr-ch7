@@ -21,6 +21,9 @@ const ProfileLazyImport = createFileRoute('/profile')()
 const LoginLazyImport = createFileRoute('/login')()
 const CarsLazyImport = createFileRoute('/cars')()
 const IndexLazyImport = createFileRoute('/')()
+const ManufacturesCreateManufacturesLazyImport = createFileRoute(
+  '/manufactures/createManufactures',
+)()
 const AdminDashboardLazyImport = createFileRoute('/admin/dashboard')()
 const AdminTypesCreateLazyImport = createFileRoute('/admin/types/create')()
 const AdminTypesIdLazyImport = createFileRoute('/admin/types/$id')()
@@ -72,6 +75,17 @@ const IndexLazyRoute = IndexLazyImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
+
+const ManufacturesCreateManufacturesLazyRoute =
+  ManufacturesCreateManufacturesLazyImport.update({
+    id: '/manufactures/createManufactures',
+    path: '/manufactures/createManufactures',
+    getParentRoute: () => rootRoute,
+  } as any).lazy(() =>
+    import('./routes/manufactures/createManufactures.lazy').then(
+      (d) => d.Route,
+    ),
+  )
 
 const AdminDashboardLazyRoute = AdminDashboardLazyImport.update({
   id: '/admin/dashboard',
@@ -227,6 +241,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDashboardLazyImport
       parentRoute: typeof rootRoute
     }
+    '/manufactures/createManufactures': {
+      id: '/manufactures/createManufactures'
+      path: '/manufactures/createManufactures'
+      fullPath: '/manufactures/createManufactures'
+      preLoaderRoute: typeof ManufacturesCreateManufacturesLazyImport
+      parentRoute: typeof rootRoute
+    }
     '/admin/cars/$id': {
       id: '/admin/cars/$id'
       path: '/admin/cars/$id'
@@ -323,6 +344,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileLazyRoute
   '/register': typeof RegisterLazyRoute
   '/admin/dashboard': typeof AdminDashboardLazyRoute
+  '/manufactures/createManufactures': typeof ManufacturesCreateManufacturesLazyRoute
   '/admin/cars/$id': typeof AdminCarsIdLazyRoute
   '/admin/cars/create': typeof AdminCarsCreateLazyRoute
   '/admin/manufactures/$id': typeof AdminManufacturesIdLazyRoute
@@ -344,6 +366,7 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileLazyRoute
   '/register': typeof RegisterLazyRoute
   '/admin/dashboard': typeof AdminDashboardLazyRoute
+  '/manufactures/createManufactures': typeof ManufacturesCreateManufacturesLazyRoute
   '/admin/cars/$id': typeof AdminCarsIdLazyRoute
   '/admin/cars/create': typeof AdminCarsCreateLazyRoute
   '/admin/manufactures/$id': typeof AdminManufacturesIdLazyRoute
@@ -366,6 +389,7 @@ export interface FileRoutesById {
   '/profile': typeof ProfileLazyRoute
   '/register': typeof RegisterLazyRoute
   '/admin/dashboard': typeof AdminDashboardLazyRoute
+  '/manufactures/createManufactures': typeof ManufacturesCreateManufacturesLazyRoute
   '/admin/cars/$id': typeof AdminCarsIdLazyRoute
   '/admin/cars/create': typeof AdminCarsCreateLazyRoute
   '/admin/manufactures/$id': typeof AdminManufacturesIdLazyRoute
@@ -389,6 +413,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/register'
     | '/admin/dashboard'
+    | '/manufactures/createManufactures'
     | '/admin/cars/$id'
     | '/admin/cars/create'
     | '/admin/manufactures/$id'
@@ -409,6 +434,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/register'
     | '/admin/dashboard'
+    | '/manufactures/createManufactures'
     | '/admin/cars/$id'
     | '/admin/cars/create'
     | '/admin/manufactures/$id'
@@ -429,6 +455,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/register'
     | '/admin/dashboard'
+    | '/manufactures/createManufactures'
     | '/admin/cars/$id'
     | '/admin/cars/create'
     | '/admin/manufactures/$id'
@@ -451,6 +478,7 @@ export interface RootRouteChildren {
   ProfileLazyRoute: typeof ProfileLazyRoute
   RegisterLazyRoute: typeof RegisterLazyRoute
   AdminDashboardLazyRoute: typeof AdminDashboardLazyRoute
+  ManufacturesCreateManufacturesLazyRoute: typeof ManufacturesCreateManufacturesLazyRoute
   AdminCarsIdLazyRoute: typeof AdminCarsIdLazyRoute
   AdminCarsCreateLazyRoute: typeof AdminCarsCreateLazyRoute
   AdminManufacturesIdLazyRoute: typeof AdminManufacturesIdLazyRoute
@@ -472,6 +500,8 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileLazyRoute: ProfileLazyRoute,
   RegisterLazyRoute: RegisterLazyRoute,
   AdminDashboardLazyRoute: AdminDashboardLazyRoute,
+  ManufacturesCreateManufacturesLazyRoute:
+    ManufacturesCreateManufacturesLazyRoute,
   AdminCarsIdLazyRoute: AdminCarsIdLazyRoute,
   AdminCarsCreateLazyRoute: AdminCarsCreateLazyRoute,
   AdminManufacturesIdLazyRoute: AdminManufacturesIdLazyRoute,
@@ -503,6 +533,7 @@ export const routeTree = rootRoute
         "/profile",
         "/register",
         "/admin/dashboard",
+        "/manufactures/createManufactures",
         "/admin/cars/$id",
         "/admin/cars/create",
         "/admin/manufactures/$id",
@@ -534,6 +565,9 @@ export const routeTree = rootRoute
     },
     "/admin/dashboard": {
       "filePath": "admin/dashboard.lazy.jsx"
+    },
+    "/manufactures/createManufactures": {
+      "filePath": "manufactures/createManufactures.lazy.jsx"
     },
     "/admin/cars/$id": {
       "filePath": "admin/cars/$id.lazy.jsx"

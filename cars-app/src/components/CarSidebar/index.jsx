@@ -10,7 +10,7 @@ const CarSidebar = () => {
     const location = useLocation();
     const dispatch = useDispatch();
 
-    if (location.pathname == "/") {
+    if (location.pathname == "/admin/dashboard") {
         return (
             <div className="carSidebar d-flex flex-column align-items-center text-white shadow-sm border-end">
                 <div className="carSidebar-icon my-3 bg-white text-muted fw-bold w-100 px-5">

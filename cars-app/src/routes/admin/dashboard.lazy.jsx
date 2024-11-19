@@ -12,14 +12,18 @@ import CarItem from '../../components/Car/carsItem'
 import ModelItem from '../../components/Model/ModelItem'
 import ManufactureItem from '../../components/Manufacture/manufacturesItem'
 import TypeCard from '../../components/Type/TypeCard'
+import CarSidebar from '../../components/CarSidebar'
 import { useQuery } from '@tanstack/react-query'
 
 export const Route = createLazyFileRoute('/admin/dashboard')({
-  component: Index,
+  component: ()=>(<div className="d-flex">
+    <CarSidebar />
+    <Index className="flex-grow-1" />
+  </div>) ,
 })
 
 function Index() {
-  const { token } = useSelector((state) => state.auth)
+  const { token,path } = useSelector((state) => state.auth)
   const [selectedData, setSelectedData] = useState('cars')
 
   const [cars, setCars] = useState([])
@@ -85,6 +89,10 @@ function Index() {
     typesSuccess,
   ])
 
+useEffect(()=>{
+  setSelectedData(path);
+},[path])
+
   const isLoading =
     carsPending || modelsPending || manufacturesPending || typesPending
 
@@ -112,34 +120,6 @@ function Index() {
     <Container>
       <Row className="mt-4">
         <Col>
-          <h1 className="text-primary">Data Selection</h1>
-          <div className="mb-4">
-            <button
-              className="btn btn-outline-success ms-2"
-              onClick={() => setSelectedData('cars')}
-            >
-              Show Cars
-            </button>
-            <button
-              className="btn btn-outline-secondary ms-2"
-              onClick={() => setSelectedData('models')}
-            >
-              Show Models
-            </button>
-            <button
-              className="btn btn-outline-secondary ms-2"
-              onClick={() => setSelectedData('manufactures')}
-            >
-              Show Manufactures
-            </button>
-            <button
-              className="btn btn-outline-secondary ms-2"
-              onClick={() => setSelectedData('types')}
-            >
-              Show Types
-            </button>
-          </div>
-
           {selectedData === 'cars' && (
             <div>
               <h2>Cars</h2>
