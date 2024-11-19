@@ -15,10 +15,13 @@ import TypeCard from '../../components/Type/TypeCard'
 import CarSidebar from '../../components/CarSidebar'
 import { useQuery } from '@tanstack/react-query'
 import { Button } from 'react-bootstrap'
+import Protected from '../../components/Auth/Protected'
 export const Route = createLazyFileRoute('/admin/dashboard')({
   component: ()=>(<div className="d-flex">
     <CarSidebar />
+    <Protected roles={[1]}>
     <Index className="flex-grow-1" />
+    </Protected>
   </div>) ,
 })
 
