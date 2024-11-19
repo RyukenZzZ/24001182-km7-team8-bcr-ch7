@@ -4,13 +4,13 @@ import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
-import { deleteCar, getDetailCars } from "../../service/car";
+import { deleteCar, getDetailCars } from "../../../service/car";
 import { toast } from "react-toastify";
 import { confirmAlert } from "react-confirm-alert";
 import { useSelector } from "react-redux";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
-export const Route = createLazyFileRoute("/cars/$id")({
+export const Route = createLazyFileRoute("/admin/cars/$id")({
     component: CarDetail,
 });
 
@@ -164,7 +164,7 @@ function CarDetail() {
                                         <div className="d-grid gap-2">
                                             <Button
                                                 as={Link}
-                                                href={`/cars/edit/${id}`}
+                                                href={`/admin/cars/edit/${id}`}
                                                 variant="primary"
                                                 size="md"
                                             >

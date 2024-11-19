@@ -3,74 +3,65 @@ import { useState, useEffect } from "react";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
-import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
 import Container from "react-bootstrap/Container";
-import { getManufactures } from "../../../service/manufacture";
-import { getDetailModel, updateModel } from "../../../service/model";
+import { getTypesById, updateType } from "../../../../service/type";
 import { toast } from "react-toastify";
-import Protected from "../../../components/Auth/Protected";
+import Protected from "../../../../components/Auth/Protected";
 import { useQuery, useMutation } from "@tanstack/react-query";
 
-export const Route = createLazyFileRoute("/models/edit/$id")({
+export const Route = createLazyFileRoute("/admin/types/edit/$id")({
     component: () => (
         <Protected roles={[1]}>
-            <EditModel />
+            <TypeDetail />
         </Protected>
     ),
 });
 
-function EditModel() {
-    const { id } = Route.useParams();
+function TypeDetail() {
     const navigate = useNavigate();
-
-    const { data: manufactures, isPending } = useQuery({
-        queryKey: ["manufactures"],
-        queryFn: () => getManufactures(),
-    });
-
-    const {
-        data: modelData,
-        isPending: modelPending,
-        isSuccess,
-    } = useQuery({
-        queryKey: ["models", id],
-        queryFn: () => getDetailModel(id),
-    });
-
+    const { id } = Route.useParams();
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
-    const [manufactureId, setManufactureId] = useState(0);
+    const [characteristic, setCharacteristic] = useState("");
+    const [style, setStyle] = useState("");
 
-    const { mutate: updateModelData, isPending: updatePending } = useMutation({
-        mutationFn: (body) => updateModel(id, body),
-        onSuccess: () => {
-            toast.success("Model updated");
-            navigate({ to: `/models/${id}` });
-        },
+    const {
+        data: typeData,
+        isPending,
+        isSuccess,
+    } = useQuery({
+        queryKey: ["type", id],
+        queryFn: () => getTypesById(id),
     });
 
     useEffect(() => {
         if (isSuccess) {
-            setName(modelData.name);
-            setDescription(modelData.description);
-            setManufactureId(modelData.manufacture_id);
+            setName(typeData.name);
+            setDescription(typeData.description);
+            setCharacteristic(typeData.characteristic);
+            setStyle(typeData.style);
         }
-    }, [modelData, isSuccess]);
+    }, [typeData, isSuccess]);
 
-    const onSubmit = async (event) => {
-        event.preventDefault();
+    const { mutate: updateTypeData, isPending: updatePending } = useMutation({
+        mutationFn: (body) => updateType(id, body),
+        onSuccess: () => {
+            toast.success("Type updated");
+            navigate({ to: `/admin/types/${id}` });
+        },
+    });
 
-        const request = {
-            name,
-            description,
-            manufactureId,
-        };
-        updateModelData(request);
+    const onSubmit = async (e) => {
+        e.preventDefault();
+        const body = { name, description, characteristic, style };
+
+        updateTypeData(body);
     };
 
-    if (modelPending) {
-        return <h1>Loading...</h1>;
+    if (isPending) {
+        return <h2>Loading...</h2>;
     }
 
     return (
@@ -79,7 +70,7 @@ function EditModel() {
                 <Col className="offset-md-3">
                     <Card>
                         <Card.Header className="text-center">
-                            Edit Model
+                            Edit Type
                         </Card.Header>
                         <Card.Body>
                             <Form onSubmit={onSubmit}>
@@ -97,16 +88,16 @@ function EditModel() {
                                             placeholder="Name"
                                             required
                                             value={name}
-                                            onChange={(event) =>
-                                                setName(event.target.value)
-                                            }
+                                            onChange={(event) => {
+                                                setName(event.target.value);
+                                            }}
                                         />
                                     </Col>
                                 </Form.Group>
                                 <Form.Group
                                     as={Row}
                                     className="mb-3"
-                                    controlId="description"
+                                    controlId="nick_name"
                                 >
                                     <Form.Label column sm={3}>
                                         Description
@@ -117,50 +108,52 @@ function EditModel() {
                                             placeholder="Description"
                                             required
                                             value={description}
-                                            onChange={(event) =>
+                                            onChange={(event) => {
                                                 setDescription(
                                                     event.target.value
-                                                )
-                                            }
+                                                );
+                                            }}
                                         />
                                     </Col>
                                 </Form.Group>
                                 <Form.Group
                                     as={Row}
                                     className="mb-3"
-                                    controlId="manufacture_id"
+                                    controlId="nick_name"
                                 >
                                     <Form.Label column sm={3}>
-                                        Manufacture
+                                        Characteristic
                                     </Form.Label>
                                     <Col sm="9">
-                                        <Form.Select
-                                            aria-label="Default select example"
-                                            value={manufactureId}
-                                            onChange={(event) =>
-                                                setManufactureId(
+                                        <Form.Control
+                                            type="text"
+                                            placeholder="Characteristic"
+                                            value={characteristic}
+                                            onChange={(event) => {
+                                                setCharacteristic(
                                                     event.target.value
-                                                )
-                                            }
-                                        >
-                                            <option disabled value="">
-                                                Select Manufacture
-                                            </option>
-                                            {!isPending &&
-                                                manufactures?.length > 0 &&
-                                                manufactures.map(
-                                                    (manufacture) => (
-                                                        <option
-                                                            key={manufacture.id}
-                                                            value={
-                                                                manufacture.id
-                                                            }
-                                                        >
-                                                            {manufacture.name}
-                                                        </option>
-                                                    )
-                                                )}
-                                        </Form.Select>
+                                                );
+                                            }}
+                                        />
+                                    </Col>
+                                </Form.Group>
+                                <Form.Group
+                                    as={Row}
+                                    className="mb-3"
+                                    controlId="nick_name"
+                                >
+                                    <Form.Label column sm={3}>
+                                        Style
+                                    </Form.Label>
+                                    <Col sm="9">
+                                        <Form.Control
+                                            type="text"
+                                            placeholder="Style"
+                                            value={style}
+                                            onChange={(event) => {
+                                                setStyle(event.target.value);
+                                            }}
+                                        />
                                     </Col>
                                 </Form.Group>
                                 <div className="d-grid gap-2">
@@ -169,7 +162,7 @@ function EditModel() {
                                         variant="primary"
                                         disabled={updatePending}
                                     >
-                                        Edit Model
+                                        Edit Type
                                     </Button>
                                 </div>
                             </Form>

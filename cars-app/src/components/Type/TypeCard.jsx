@@ -19,7 +19,7 @@ const CarType = ({ type }) => {
                     <Row className="d-flex align-items-center justify-content-between px-2">
                         <Button
                             as={Link}
-                            href={`/types/${type?.id}`}
+                            href={`/admin/types/${type?.id}`}
                             variant="primary"
                             className="mt-3 align-self-start d-flex col-5"
                         >
@@ -34,7 +34,7 @@ const CarType = ({ type }) => {
                         {user?.role_id === 1 && (
                             <Button
                                 as={Link}
-                                href={`/types/edit/${type?.id}`}
+                                href={`/admin/types/edit/${type?.id}`}
                                 variant="success"
                                 className="mt-3 align-self-start d-flex col-5"
                             >
