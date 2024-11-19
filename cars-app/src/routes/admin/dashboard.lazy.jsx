@@ -1,4 +1,4 @@
-import { createLazyFileRoute } from '@tanstack/react-router'
+import { createLazyFileRoute, Link } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import Row from 'react-bootstrap/Row'
@@ -14,6 +14,7 @@ import ManufactureItem from '../../components/Manufacture/manufacturesItem'
 import TypeCard from '../../components/Type/TypeCard'
 import CarSidebar from '../../components/CarSidebar'
 import { useQuery } from '@tanstack/react-query'
+import { Button } from 'react-bootstrap'
 
 export const Route = createLazyFileRoute('/admin/dashboard')({
   component: ()=>(<div className="d-flex">
@@ -118,7 +119,7 @@ useEffect(()=>{
 
   return (
     <Container>
-      <Row className="mt-4">
+      <Row className="mt-4 me-5">
         <Col>
           {selectedData === 'cars' && (
             <div>
@@ -138,7 +139,13 @@ useEffect(()=>{
           )}
 
           {selectedData === 'models' && (
-            <div>
+            
+            <div className="me-5">
+              <Col className="text-end">
+          <Button variant="primary" as={Link} to ="/admin/models/create">
+            + Add New Car
+          </Button>
+        </Col>
               <h2>Models</h2>
               {models.length > 0 ? (
                 <Row>

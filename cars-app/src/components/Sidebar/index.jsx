@@ -61,7 +61,7 @@ const Sidebar = () => {
         )}
         
         <Nav.Item>
-          <Nav.Link as={Link} to="/" className="text-white">
+          <Nav.Link as={Link} to="/cars" className="text-white">
             <BiCar className="sidebar-icon" />
             <span className="sidebar-text">Cars</span>
           </Nav.Link>
