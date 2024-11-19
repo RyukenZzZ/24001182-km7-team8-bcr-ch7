@@ -5,6 +5,7 @@ import { getCars } from "../service/car/index";
 import carsImage from "../assets/img_car.png";
 import Protected from "../components/Auth/Protected";
 
+
 export const Route = createLazyFileRoute("/cars")({
   component: () => (
     <Protected roles={[1, 2]}>
@@ -39,7 +40,7 @@ function CarsFilter() {
     // Validasi input required
     const isValid = [...form.elements].every((input) => {
       if (input.required) {
-        return input.value.trim() !== ""; // Pastikan nilai tidak kosong atau hanya spasi
+        return input.value.trim() !== ""; 
       }
       return true;
     });

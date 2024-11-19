@@ -1,4 +1,4 @@
-import { createLazyFileRoute, Link } from '@tanstack/react-router'
+import { createLazyFileRoute,Link } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import Row from 'react-bootstrap/Row'
@@ -15,7 +15,6 @@ import TypeCard from '../../components/Type/TypeCard'
 import CarSidebar from '../../components/CarSidebar'
 import { useQuery } from '@tanstack/react-query'
 import { Button } from 'react-bootstrap'
-
 export const Route = createLazyFileRoute('/admin/dashboard')({
   component: ()=>(<div className="d-flex">
     <CarSidebar />
@@ -123,7 +122,10 @@ useEffect(()=>{
         <Col>
           {selectedData === 'cars' && (
             <div>
-              <h2>Cars</h2>
+              <div className='d-flex align-items-center justify-content-between px-3 mb-3'>
+                <h2>Cars</h2>
+                <Button as={Link} to="/admin/cars/create" variant='primary' className='text-white px-2 py-1 ms-2 rounded'>Create New</Button>
+              </div>
               {cars.length > 0 ? (
                 <Row>
                   {cars.map((car) => (
@@ -139,14 +141,11 @@ useEffect(()=>{
           )}
 
           {selectedData === 'models' && (
-            
-            <div className="me-5">
-              <Col className="text-end">
-          <Button variant="primary" as={Link} to ="/admin/models/create">
-            + Add New Car
-          </Button>
-        </Col>
-              <h2>Models</h2>
+            <div>
+              <div className='d-flex align-items-center justify-content-between px-3 mb-3'>
+                <h2>Models</h2>
+                <Button as={Link} to="/admin/models/create" variant='primary' className='text-white px-2 py-1 ms-2 rounded'>Create New</Button>
+              </div>
               {models.length > 0 ? (
                 <Row>
                   {models.map((model) => (
@@ -163,7 +162,10 @@ useEffect(()=>{
 
           {selectedData === 'manufactures' && (
             <div>
-              <h2>Manufactures</h2>
+              <div className='d-flex align-items-center justify-content-between px-3 mb-3'>
+                <h2>Manufactures</h2>
+                <Button as={Link} to="/admin/manufactures/createManufactures" variant='primary' className='text-white px-2 py-1 ms-2 rounded'>Create New</Button>
+              </div>
               {manufactures.length > 0 ? (
                 <Row>
                   {manufactures.map((manufacture) => (
@@ -180,7 +182,10 @@ useEffect(()=>{
 
           {selectedData === 'types' && (
             <div>
-              <h2>Types</h2>
+              <div className='d-flex align-items-center justify-content-between px-3 mb-3'>
+                <h2>Types</h2>
+                <Button as={Link} to="/admin/types/create" variant='primary' className='text-white px-2 py-1 ms-2 rounded'>Create New</Button>
+              </div>
               {types.length > 0 ? (
                 <Row>
                   {types.map((type) => (

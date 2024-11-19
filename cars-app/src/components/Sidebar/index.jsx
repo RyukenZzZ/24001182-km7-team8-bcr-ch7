@@ -16,11 +16,9 @@ const Sidebar = () => {
 
 
   const handleLogout = useCallback(() => {
-    // delete the local storage here
     dispatch(setUser(null));
     dispatch(setToken(null));
 
-    // redirect to login
     navigate({ to: "/login" });
 }, [dispatch, navigate]);
 
@@ -63,7 +61,7 @@ const Sidebar = () => {
         <Nav.Item>
           <Nav.Link as={Link} to="/cars" className="text-white">
             <BiCar className="sidebar-icon" />
-            <span className="sidebar-text">Cars</span>
+            <span className="sidebar-text">Filter</span>
           </Nav.Link>
         </Nav.Item>
 

@@ -7,11 +7,12 @@ import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Image from "react-bootstrap/Image";
 import { useDispatch, useSelector } from "react-redux";
-import { register } from "../service/auth";
+import { google,register } from "../service/auth";
 import { toast } from "react-toastify";
 import { setToken } from "../redux/slices/auth";
 import { useMutation } from "@tanstack/react-query";
 import carsImage from "../assets/login-cars.png";
+import { useGoogleLogin } from '@react-oauth/google';
 
 export const Route = createLazyFileRoute("/register")({
     component: Register,
@@ -53,6 +54,22 @@ function Register() {
             toast.error(error?.message);
         },
     });
+
+    const { mutate: registerWithGoogle } = useMutation({
+        mutationFn: (accessToken) => {
+            return google(accessToken);
+        },
+        onSuccess: (data) => {
+            // set token to global state
+            dispatch(setToken(data?.token));
+
+            // redirect to home
+            navigate({ to: "/" });
+        },
+        onError: (err) => {
+            toast.error(err?.message);
+        },
+    });
     const onSubmit = async (event) => {
         event.preventDefault();
 
@@ -66,6 +83,12 @@ function Register() {
 
         registerUser(body);
     };
+    const googleLogin = useGoogleLogin({
+        onSuccess: (tokenResponse) => {
+            registerWithGoogle(tokenResponse.access_token);
+        },
+        onError: (err) => console.log(err),
+    });
 
     return (
         <Row className="vw-100 vh-100 d-flex align-items-center justify-content-center">
@@ -196,6 +219,11 @@ function Register() {
                                     Register
                                 </Button>
                                 <p>Already have an account? <Link to={"/login"} className="text-decoration-none">Login</Link></p>
+                            </div>
+                            <div className="d-grid gap-2 mt-5">
+                                <Button type="button" variant="primary" onClick={() => googleLogin()}>
+                                    Login with Google
+                                </Button>
                             </div>
                         </Form>
                     </Card.Body>
