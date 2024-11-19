@@ -13,9 +13,14 @@ import {
 } from "../../../../service/manufacture";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import Protected from "../../../../components/Auth/Protected";
 
 export const Route = createLazyFileRoute("/admin/manufactures/edit/$id")({
-    component: EditManufacture,
+    component:() => (
+        <Protected roles={[1]}>
+            <EditManufacture />
+        </Protected>
+    ),
 });
 
 function EditManufacture() {
