@@ -85,7 +85,7 @@ const NavigationBar = () => {
                     <Nav>
                         {user ? (
                             <>
-                                <Nav.Link as={Link} to="/profile">
+                                <Nav.Link as={Link} to="/profile" className="d-inline">
                                     <Image
                                         src={user?.profile_picture}
                                         fluid
@@ -97,7 +97,7 @@ const NavigationBar = () => {
                                             borderRadius: "50%",
                                         }}
                                     />{" "}
-                                    {user?.name}
+                                    <span className="px-2">{user?.name}</span>
                                 </Nav.Link>
                                 <Nav.Link onClick={logout}>Logout</Nav.Link>
                             </>
