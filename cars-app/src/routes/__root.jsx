@@ -4,7 +4,6 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "react-confirm-alert/src/react-confirm-alert.css";
 import UserNavbar from "../components/Navbar/userNavbar";
-import NavigationBar from "../components/Navbar";
 import { useSelector } from "react-redux";
 import Sidebar from "../components/Sidebar";
 
@@ -17,16 +16,30 @@ function RootComponent() {
 
   return (
     <>
-      <div className="d-flex">
-        <Sidebar />
-        <div className="d-flex flex-column flex-grow-1">
-          {/* Conditional Navbar */}
-          {user?.role_id === 1 ? <NavigationBar /> : <UserNavbar />}
-            <Outlet />
+      {/* Conditional Rendering Based on User Role */}
+      {user?.role_id === 1 ? (
+        <div className="d-flex">
+          {/* Sidebar Layout */}
+          <Sidebar />
+          <div className="d-flex flex-column flex-grow-1">
+            <div className="p-3">
+              <Outlet />
+            </div>
+          </div>
         </div>
-        <TanStackRouterDevtools />
-        <ToastContainer theme="colored" />
-      </div>
+      ) : (
+        <div className="d-flex flex-column flex-grow-1">
+          {/* Navbar Layout */}
+          <UserNavbar />
+          <div className="p-3">
+            <Outlet />
+          </div>
+        </div>
+      )}
+
+      {/* Shared Components */}
+      <TanStackRouterDevtools />
+      <ToastContainer theme="colored" />
     </>
   );
 }

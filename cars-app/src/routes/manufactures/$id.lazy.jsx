@@ -37,7 +37,7 @@ function ManufacturesDetail() {
         mutationFn: () => deleteManufacture(id),
         onSuccess: () => {
             toast.success("Manufacture deleted");
-            navigate({ to: "/" });
+            navigate({ to: "/admin/dashboard" });
         },
         onError: () => {
             toast.error("Unable to delete");

@@ -33,7 +33,7 @@ function CarDetail() {
         mutationFn: () => deleteCar(id),
         onSuccess: () => {
             toast.success("Car deleted");
-            navigate({ to: "/" });
+            navigate({ to: "/admin/dashboard" });
         },
         onError: () => {
             toast.error("Unable to delete");

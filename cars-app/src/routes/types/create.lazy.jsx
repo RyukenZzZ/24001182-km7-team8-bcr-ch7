@@ -30,7 +30,7 @@ function CreateType() {
         mutationFn: (body) => createType(body),
         onSuccess: () => {
             toast.success("New type created");
-            navigate({ to: "/" });
+            navigate({ to: "/admin/dashboard" });
         },
     });
 

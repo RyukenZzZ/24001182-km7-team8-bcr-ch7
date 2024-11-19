@@ -36,7 +36,7 @@ function CreateModel() {
         mutationFn: (body) => createModel(body),
         onSuccess: () => {
             toast.success("New model added");
-            navigate({ to: "/" });
+            navigate({ to: "/admin/dashboard" });
         },
     });
 

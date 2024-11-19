@@ -46,7 +46,7 @@ function CreateCar() {
         mutationFn: (request) => createCar(request),
         onSuccess: () => {
             toast.success("New car created");
-            navigate({ to: "/" });
+            navigate({ to: "/admin/dashboard" });
         },
     });
 

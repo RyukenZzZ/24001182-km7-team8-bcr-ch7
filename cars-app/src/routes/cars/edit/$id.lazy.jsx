@@ -83,7 +83,11 @@ function EditCar() {
         mutationFn: (carData) => updateCar(id, carData),
         onSuccess: () => {
             toast.success("Car updated successfully");
+<<<<<<< HEAD
+            navigate({ to: "/admin/dashboard" });
+=======
             navigate(`/`);
+>>>>>>> 094f6af23cfe76e9616ce92092ea2766babdd0b7
         },
         onError: (error) => {
             toast.error(error?.message || "Failed to update car");

@@ -34,7 +34,7 @@ function ModelDetail() {
         mutationFn: () => deleteModel(id),
         onSuccess: () => {
             toast.success("Model deleted");
-            navigate({ to: "/" });
+            navigate({ to: "/admin/dashboard" });
         },
         onError: () => {
             toast.error("Unable to delete");
