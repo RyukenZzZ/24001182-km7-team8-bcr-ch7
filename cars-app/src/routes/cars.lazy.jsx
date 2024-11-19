@@ -176,24 +176,21 @@ function CarsFilter() {
       </Container>
 
       {/* Display Search Results Section */}
-      <Container>
-        <Row className="g-3" id="result-content">
-          {loading ? (
-            <h5 className="text-center">Memuat data...</h5>
-          ) : filteredCars.length === 0 ? (
-            <h5 className="text-center">Hasil pencarian belum ada.</h5>
-          ) : (
-            filteredCars.map((car) => (
-              <Col
-                md={4}
-                key={car.id}
-                className="d-flex justify-content-center align-items-center"
-              >
-                <Card
-                  style={{ width: "100%", maxWidth: "18rem" }}
-                  className="h-100 shadow border-0"
-                >
-                  <Card.Img
+
+      <Container className="my-4" >
+      <Row className="g-3" id="result-content">
+        {loading ? (
+          <h5 className="text-center">Memuat data...</h5>
+        ) : filteredCars.length === 0 ? (
+          <h5 className="text-center">Hasil pencarian belum ada.</h5>
+        ) : (
+          filteredCars.map((car) => (
+            <Col md={4} key={car.id} className="d-flex justify-content-center">
+                          <Card
+                style={{ width: "100%", maxWidth: "18rem" }}
+                className="h-100 shadow border-0"
+            >
+                <Card.Img
                     variant="top"
                     src={car?.image}
                     style={{ height: "200px", objectFit: "cover" }}
@@ -219,12 +216,13 @@ function CarsFilter() {
                       Available at : {car.availableAt.split("T")[0]}
                     </Card.Text>
                     <Button variant="primary">Pilih Mobil</Button>
-                  </Card.Body>
-                </Card>
-              </Col>
-            ))
-          )}
-        </Row>
+                </Card.Body>
+            </Card>
+            </Col>
+          ))
+        )}
+      </Row>
+
       </Container>
     </>
   );
