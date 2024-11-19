@@ -5,12 +5,13 @@ import { getCars } from "../service/car/index";
 import carsImage from "../assets/img_car.png";
 import Protected from "../components/Auth/Protected";
 
+
 export const Route = createLazyFileRoute("/cars")({
   component: () => (
-    <Protected roles={[1,2]}>
-        <CarsFilter />
+    <Protected roles={[1, 2]}>
+      <CarsFilter />
     </Protected>
-),
+  ),
 });
 
 function CarsFilter() {
@@ -39,7 +40,7 @@ function CarsFilter() {
     // Validasi input required
     const isValid = [...form.elements].every((input) => {
       if (input.required) {
-        return input.value.trim() !== ""; // Pastikan nilai tidak kosong atau hanya spasi
+        return input.value.trim() !== ""; 
       }
       return true;
     });
@@ -175,6 +176,8 @@ function CarsFilter() {
       </Container>
 
       {/* Display Search Results Section */}
+
+      <Container className="my-4" >
       <Row className="g-3" id="result-content">
         {loading ? (
           <h5 className="text-center">Memuat data...</h5>
@@ -182,7 +185,7 @@ function CarsFilter() {
           <h5 className="text-center">Hasil pencarian belum ada.</h5>
         ) : (
           filteredCars.map((car) => (
-            <Col md={4} key={car.id}>
+            <Col md={4} key={car.id} className="d-flex justify-content-center">
                           <Card
                 style={{ width: "100%", maxWidth: "18rem" }}
                 className="h-100 shadow border-0"
@@ -191,24 +194,26 @@ function CarsFilter() {
                     variant="top"
                     src={car?.image}
                     style={{ height: "200px", objectFit: "cover" }}
-                />
-                <Card.Body className="d-flex flex-column">
+                  />
+                  <Card.Body className="d-flex flex-column">
                     <Card.Text className="fs-6 fw-semibold mb-2">
-                        {car?.plate}
+                      {car?.plate}
                     </Card.Text>
                     <Card.Text className="fs-5 fw-bold flex-grow-1 mb-2">
-                        Rp. {car.rentPerDay} / day
+                      Rp. {car.rentPerDay} / day
                     </Card.Text>
                     <Card.Text className="fs-6 fw-semibold text-muted mb-2">
-                        Available :{" "}
-                        <span
-                            className={`fw-bold ${car.available ? "bg-success" : "bg-danger"} px-2 py-1 rounded text-white`}
-                        >
-                            {car.available ? "Yes" : "No"}
-                        </span>
+                      Available :{" "}
+                      <span
+                        className={`fw-bold ${
+                          car.available ? "bg-success" : "bg-danger"
+                        } px-2 py-1 rounded text-white`}
+                      >
+                        {car.available ? "Yes" : "No"}
+                      </span>
                     </Card.Text>
                     <Card.Text className="fs-6 fw-semibold text-muted flex-grow-1">
-                        Available at : {car.availableAt.split("T")[0]}
+                      Available at : {car.availableAt.split("T")[0]}
                     </Card.Text>
                     <Button variant="primary">Pilih Mobil</Button>
                 </Card.Body>
@@ -217,6 +222,8 @@ function CarsFilter() {
           ))
         )}
       </Row>
+
+      </Container>
     </>
   );
 }

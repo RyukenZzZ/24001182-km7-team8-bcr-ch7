@@ -118,7 +118,7 @@ useEffect(()=>{
 
   return (
     <Container>
-      <Row className="mt-4">
+      <Row className="mt-4 me-5">
         <Col>
           {selectedData === 'cars' && (
             <div>
