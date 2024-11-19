@@ -6,11 +6,11 @@ import Button from "react-bootstrap/esm/Button";
 import Container from "react-bootstrap/Container";
 import { confirmAlert } from "react-confirm-alert";
 import { toast } from "react-toastify";
-import { deleteType, getTypesById } from "../../service/type";
+import { deleteType, getTypesById } from "../../../service/type";
 import { useSelector } from "react-redux";
 import { useQuery, useMutation } from "@tanstack/react-query";
 
-export const Route = createLazyFileRoute("/types/$id")({
+export const Route = createLazyFileRoute("/admin/types/$id")({
     component: TypeDetail,
 });
 
@@ -82,7 +82,7 @@ function TypeDetail() {
                                         <div className="d-grid gap-2">
                                             <Button
                                                 as={Link}
-                                                href={`/types/edit/${id}`}
+                                                href={`/admin/types/edit/${id}`}
                                                 variant="primary"
                                                 size="md"
                                             >

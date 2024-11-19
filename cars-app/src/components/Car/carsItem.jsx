@@ -43,7 +43,7 @@ const CarItem = ({ car }) => {
                     <Row className="d-flex align-items-center justify-content-between px-2">
                         <Button
                             as={Link}
-                            href={`/cars/${car?.id}`}
+                            href={`/admin/cars/${car?.id}`}
                             variant="primary"
                             className="mt-3 align-self-start d-flex col-5"
                         >
@@ -58,7 +58,7 @@ const CarItem = ({ car }) => {
                         {user?.role_id === 1 && (
                             <Button
                                 as={Link}
-                                href={`/cars/edit/${car?.id}`}
+                                href={`/admin/cars/edit/${car?.id}`}
                                 variant="success"
                                 className="mt-3 align-self-start d-flex col-5"
                             >

@@ -10,11 +10,11 @@ import Container from "react-bootstrap/Container";
 import {
     getManufacturesById,
     updateManufacture,
-} from "../../../service/manufacture";
+} from "../../../../service/manufacture";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
-export const Route = createLazyFileRoute("/manufactures/edit/$id")({
+export const Route = createLazyFileRoute("/admin/manufactures/edit/$id")({
     component: EditManufacture,
 });
 
@@ -42,7 +42,7 @@ function EditManufacture() {
             mutationFn: (body) => updateManufacture(id, body),
             onSuccess: () => {
                 toast.success("Manufacture updated");
-                navigate({ to: "/admin/dashboard" });
+                navigate({ to: `/admin/manufactures/${id}` });
             },
         });
     useEffect(() => {
