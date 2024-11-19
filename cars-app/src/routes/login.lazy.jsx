@@ -78,7 +78,7 @@ function Login() {
     };
 
     return (
-        <Row className="vw-100 vh-100 d-flex align-items-center justify-content-center">
+        <Row className="vw-100 vh-100 d-flex align-items-center justify-content-center" fixed="top">
             <Col className="col-md-9 h-100">
                 <Image src={carsImage} className="img-fluid h-100" style={{objectFit: "cover"}}/>
             </Col>

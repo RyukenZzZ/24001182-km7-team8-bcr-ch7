@@ -22,7 +22,7 @@ function RootComponent() {
           {/* Sidebar Layout */}
           <Sidebar />
           <div className="d-flex flex-column flex-grow-1">
-            <div className="p-3">
+            <div className="">
               <Outlet />
             </div>
           </div>
@@ -31,7 +31,7 @@ function RootComponent() {
         <div className="d-flex flex-column flex-grow-1">
           {/* Navbar Layout */}
           <UserNavbar />
-          <div className="p-3">
+          <div className="">
             <Outlet />
           </div>
         </div>
