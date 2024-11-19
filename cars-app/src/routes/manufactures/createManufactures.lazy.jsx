@@ -31,7 +31,7 @@ function CreateManufacture() {
         mutationFn: (request) => createManufacture(request),
         onSuccess: () => {
             toast.success("New manufacture created");
-            navigate({ to: "/" });
+            navigate({ to: "/admin/dashboard" });
         },
     });
     useEffect(() => {

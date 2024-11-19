@@ -2,39 +2,64 @@ import { createLazyFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
-import Button from "react-bootstrap/esm/Button";
+import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
-import { confirmAlert } from "react-confirm-alert";
+import { deleteModel, getDetailModel } from "../../../service/model";
 import { toast } from "react-toastify";
-import { deleteType, getTypesById } from "../../service/type";
+import { confirmAlert } from "react-confirm-alert";
 import { useSelector } from "react-redux";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
-export const Route = createLazyFileRoute("/types/$id")({
-    component: TypeDetail,
+export const Route = createLazyFileRoute("/admin/models/$id")({
+    component: ModelDetail,
 });
 
-function TypeDetail() {
+function ModelDetail() {
     const { id } = Route.useParams();
-    const { user } = useSelector((state) => state.auth);
     const navigate = useNavigate();
+    const { user } = useSelector((state) => state.auth);
 
-    const { data: type, isPending } = useQuery({
-        queryKey: ["type", id],
-        queryFn: () => getTypesById(id),
+    const {
+        data: model,
+        isLoading,
+        isError,
+    } = useQuery({
+        queryKey: ["model", id],
+        queryFn: () => getDetailModel(id),
         enabled: !!id,
+        retry: false,
     });
 
-    const { mutate: deleteTypeData } = useMutation({
-        mutationFn: () => deleteType(id),
+    const { mutate: deleteModelData } = useMutation({
+        mutationFn: () => deleteModel(id),
         onSuccess: () => {
-            toast.success("Type deleted");
-            navigate({ to: "/" });
+            toast.success("Model deleted");
+            navigate({ to: "/admin/dashboard" });
         },
         onError: () => {
             toast.error("Unable to delete");
         },
     });
+
+    if (isLoading) {
+        return (
+            <Row className="mt-5">
+                <Col>
+                    <h1 className="text-center">Loading...</h1>
+                </Col>
+            </Row>
+        );
+    }
+
+    if (isError || !model) {
+        return (
+            <Row className="mt-5">
+                <Col>
+                    <h1 className="text-center">Model is not found!</h1>
+                </Col>
+            </Row>
+        );
+    }
 
     const onDelete = async (event) => {
         event.preventDefault();
@@ -45,7 +70,9 @@ function TypeDetail() {
             buttons: [
                 {
                     label: "Yes",
-                    onClick: () => deleteTypeData(),
+                    onClick: () => {
+                        deleteModelData();
+                    },
                 },
                 {
                     label: "No",
@@ -55,38 +82,31 @@ function TypeDetail() {
         });
     };
 
-    if (isPending) {
-        return <h2>Loading...</h2>;
-    }
     return (
         <Container>
             <Row className="mt-5">
                 <Col className="offset-md-3">
                     <Card>
                         <Card.Body>
-                            <Card.Title>{type?.name}</Card.Title>
+                            <Card.Title>Name: {model?.name}</Card.Title>
                             <Card.Text>
-                                Description : {type?.description}
+                                Description: {model?.description}
                             </Card.Text>
-                            {type.characteristic && (
-                                <Card.Text>
-                                    Characteristic : {type?.characteristic}
-                                </Card.Text>
-                            )}
-                            {type.style && (
-                                <Card.Text>Style : {type?.style}</Card.Text>
-                            )}
-                            {user?.role_id == 1 && (
+                            <Card.Text>
+                                Manufacture: {model?.manufactures?.name}
+                            </Card.Text>
+
+                            {user?.role_id === 1 && (
                                 <>
                                     <Card.Text>
                                         <div className="d-grid gap-2">
                                             <Button
                                                 as={Link}
-                                                href={`/types/edit/${id}`}
+                                                href={`/admin/models/edit/${id}`}
                                                 variant="primary"
                                                 size="md"
                                             >
-                                                Edit Types
+                                                Edit Model
                                             </Button>
                                         </div>
                                     </Card.Text>
@@ -97,7 +117,7 @@ function TypeDetail() {
                                                 variant="danger"
                                                 size="md"
                                             >
-                                                Delete Types
+                                                Delete Model
                                             </Button>
                                         </div>
                                     </Card.Text>

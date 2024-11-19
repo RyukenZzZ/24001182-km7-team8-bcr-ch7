@@ -30,7 +30,7 @@ const ManufactureItem = ({ manufacture }) => {
                     <Row className="d-flex align-items-center justify-content-between px-2">
                         <Button
                             as={Link}
-                            href={`/manufactures/${manufacture?.id}`}
+                            href={`/admin/manufactures/${manufacture?.id}`}
                             variant="primary"
                             className="mt-3 align-self-start d-flex col-5"
                         >
@@ -45,7 +45,7 @@ const ManufactureItem = ({ manufacture }) => {
                         {user?.role_id === 1 && (
                             <Button
                                 as={Link}
-                                href={`/manufactures/edit/${manufacture?.id}`}
+                                href={`/admin/manufactures/edit/${manufacture?.id}`}
                                 variant="success"
                                 className="mt-3 align-self-start d-flex col-5"
                             >

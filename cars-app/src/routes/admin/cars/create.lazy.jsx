@@ -1,93 +1,68 @@
 import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import Image from "react-bootstrap/Image";
+import Image from "react-bootstrap/esm/Image";
 import Container from "react-bootstrap/Container";
-import { getModels } from "../../../service/model";
 import { getManufactures } from "../../../service/manufacture";
+import { getModels } from "../../../service/model";
 import { getTypes } from "../../../service/type";
-import { getCarById, updateCar } from "../../../service/car";
-import { toast } from "react-toastify";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { createCar } from "../../../service/car";
 import Protected from "../../../components/Auth/Protected";
-export const Route = createLazyFileRoute("/cars/edit/$id")({
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { toast } from "react-toastify";
+
+export const Route = createLazyFileRoute("/admin/cars/create")({
     component: () => (
         <Protected roles={[1]}>
-            <EditCar />
+            <CreateCar />
         </Protected>
     ),
 });
-function EditCar() {
-    const { id } = Route.useParams();
+
+function CreateCar() {
     const navigate = useNavigate();
 
-    const [plate, setPlate] = useState("");
-    const [description, setDescription] = useState("");
-    const [rentPerDay, setRentPerDay] = useState(0);
-    const [capacity, setCapacity] = useState(0);
     const [available, setAvailable] = useState(false);
-    const [availableAt, setAvailableAt] = useState("");
+    const [plate, setPlate] = useState("");
+    const [modelId, setModelId] = useState(0);
+    const [rentPerDay, setRentPerDay] = useState("");
+    const [capacity, setCapacity] = useState("");
     const [image, setImage] = useState(undefined);
     const [currentImage, setCurrentImage] = useState(undefined);
+    const [description, setDescription] = useState("");
+    const [availableAt, setAvailableAt] = useState("");
     const [transmission, setTransmission] = useState("");
-    const [year, setYear] = useState(0);
+    const [typeId, setTypeId] = useState(0);
+    const [manufactureId, setManufactureId] = useState(0);
+    const [year, setYear] = useState("");
     const [options, setOptions] = useState([]);
     const [specs, setSpecs] = useState([]);
 
-    const [modelId, setModelId] = useState(0);
-    const [manufactureId, setManufactureId] = useState(0);
-    const [typeId, setTypeId] = useState(0);
-    // Fetch models, manufactures, and types using useQuery
-    const modelsQuery = useQuery({
-        queryKey: ["models"],
-        queryFn: ()=>getModels(),
-    });
-
-    const manufacturesQuery = useQuery({
-        queryKey: ["manufactures"],
-        queryFn: ()=>getManufactures(),
-    });
-
-    const typesQuery = useQuery({
-        queryKey: ["types"],
-        queryFn: ()=>getTypes(),
-    });
-
-    // Fetch car details by id using useQuery
-    const carQuery = useQuery({
-        queryKey: ["car", id],
-        queryFn: () => getCarById(id),
-        onSuccess: (data) => {
-            setPlate(data.plate);
-            setManufactureId(data.manufacture_id);
-            setTypeId(data.type_id);
-            setModelId(data.model_id);
-            setDescription(data.description);
-            setRentPerDay(data.rentPerDay);
-            setCapacity(data.capacity);
-            setAvailable(data.available);
-            setAvailableAt(data.availableAt.split("T")[0]);
-            setImage(data.image);
-            setCurrentImage(data.image);
-            setTransmission(data.transmission);
-            setYear(data.year);
-            setOptions(data.options);
-            setSpecs(data.specs);
-        },
-    });
-    const updateCarMutation = useMutation({
-        mutationFn: (carData) => updateCar(id, carData),
+    const { mutate: createCarData, isPending } = useMutation({
+        mutationFn: (request) => createCar(request),
         onSuccess: () => {
-            toast.success("Car updated successfully");
-            navigate(`/`);
+            toast.success("New car created");
+            navigate({ to: "/admin/dashboard" });
         },
-        onError: (error) => {
-            toast.error(error?.message || "Failed to update car");
-        },
+    });
+
+    const { data: models } = useQuery({
+        queryKey: ["models"],
+        queryFn: () => getModels(),
+    });
+
+    const { data: manufactures } = useQuery({
+        queryKey: ["manufactures"],
+        queryFn: () => getManufactures(),
+    });
+
+    const { data: types } = useQuery({
+        queryKey: ["types"],
+        queryFn: () => getTypes(),
     });
 
     const handleAddOption = () => {
@@ -110,62 +85,35 @@ function EditCar() {
         setSpecs(newSpecs);
     };
 
-    const onSubmit = (event) => {
+    const onSubmit = async (event) => {
         event.preventDefault();
+
         const request = {
             plate,
-            manufactureId,
             modelId,
-            typeId,
-            description,
             rentPerDay,
             capacity,
-            available,
-            availableAt,
             image,
+            description,
+            availableAt,
+            available,
             transmission,
+            typeId,
+            manufactureId,
             year,
             options,
             specs,
         };
-        updateCarMutation.mutate(request);
+        createCarData(request);
     };
 
-    useEffect(() => {
-        if (carQuery.isSuccess && carQuery.data) {
-            setPlate(carQuery.data.plate);
-            setManufactureId(carQuery.data.manufacture_id);
-            setTypeId(carQuery.data.type_id);
-            setModelId(carQuery.data.model_id);
-            setDescription(carQuery.data.description);
-            setRentPerDay(carQuery.data.rentPerDay);
-            setCapacity(carQuery.data.capacity);
-            setAvailable(carQuery.data.available);
-            setAvailableAt(carQuery.data.availableAt.split("T")[0]);
-            setImage(carQuery.data.image);
-            setCurrentImage(carQuery.data.image);
-            setTransmission(carQuery.data.transmission);
-            setYear(carQuery.data.year);
-            setOptions(carQuery.data.options);
-            setSpecs(carQuery.data.specs);
-        }
-    }, [carQuery.isSuccess, carQuery.data]);
-
-    if (
-        modelsQuery.isLoading ||
-        manufacturesQuery.isLoading ||
-        typesQuery.isLoading ||
-        carQuery.isLoading
-    ) {
-        return <div>Loading...</div>;
-    }
     return (
         <Container>
             <Row className="mt-5">
                 <Col className="offset-md-3">
                     <Card>
                         <Card.Header className="text-center">
-                            Edit Car
+                            Create Car
                         </Card.Header>
                         <Card.Body>
                             <Form onSubmit={onSubmit}>
@@ -180,55 +128,125 @@ function EditCar() {
                                     <Col sm="9">
                                         <Form.Control
                                             type="text"
-                                            placeholder="Plate"
+                                            placeholder="Plate Number"
+                                            required
                                             value={plate}
-                                            onChange={(event) =>
-                                                setPlate(event.target.value)
+                                            onChange={(e) =>
+                                                setPlate(e.target.value)
                                             }
                                         />
                                     </Col>
                                 </Form.Group>
+
                                 <Form.Group
                                     as={Row}
                                     className="mb-3"
-                                    controlId="description"
+                                    controlId="manufacture_id"
                                 >
                                     <Form.Label column sm={3}>
-                                        Description
+                                        Manufacture
                                     </Form.Label>
                                     <Col sm="9">
-                                        <Form.Control
-                                            type="text"
-                                            placeholder="Description"
-                                            value={description}
+                                        <Form.Select
+                                            aria-label="Default select example"
                                             onChange={(event) =>
-                                                setDescription(
+                                                setManufactureId(
                                                     event.target.value
                                                 )
                                             }
-                                        />
+                                        >
+                                            <option disabled selected>
+                                                Select Manufacture
+                                            </option>
+                                            {manufactures?.length > 0 &&
+                                                manufactures.map(
+                                                    (manufacture) => (
+                                                        <option
+                                                            key={
+                                                                manufacture?.id
+                                                            }
+                                                            value={
+                                                                manufacture?.id
+                                                            }
+                                                        >
+                                                            {manufacture?.name}
+                                                        </option>
+                                                    )
+                                                )}
+                                        </Form.Select>
                                     </Col>
                                 </Form.Group>
+
+                                <Form.Group
+                                    as={Row}
+                                    className="mb-3"
+                                    controlId="model_id"
+                                >
+                                    <Form.Label column sm={3}>
+                                        Model
+                                    </Form.Label>
+                                    <Col sm="9">
+                                        <Form.Select
+                                            aria-label="Default select example"
+                                            onChange={(event) =>
+                                                setModelId(event.target.value)
+                                            }
+                                        >
+                                            <option disabled selected>
+                                                Select Model
+                                            </option>
+                                            {models?.length > 0 &&
+                                                models.map((model) => (
+                                                    <option
+                                                        key={model?.id}
+                                                        value={model?.id}
+                                                    >
+                                                        {model?.name}
+                                                    </option>
+                                                ))}
+                                        </Form.Select>
+                                    </Col>
+                                </Form.Group>
+
                                 <Form.Group
                                     as={Row}
                                     className="mb-3"
                                     controlId="rentPerDay"
                                 >
                                     <Form.Label column sm={3}>
-                                        Rent Per Day
+                                        Rent per Day
                                     </Form.Label>
                                     <Col sm="9">
                                         <Form.Control
                                             type="number"
+                                            placeholder="Rent per Day"
                                             value={rentPerDay}
-                                            onChange={(event) =>
-                                                setRentPerDay(
-                                                    event.target.value
-                                                )
+                                            onChange={(e) =>
+                                                setRentPerDay(e.target.value)
                                             }
                                         />
                                     </Col>
                                 </Form.Group>
+
+                                <Form.Group
+                                    as={Row}
+                                    className="mb-3"
+                                    controlId="availableAt"
+                                >
+                                    <Form.Label column sm={3}>
+                                        Available At
+                                    </Form.Label>
+                                    <Col sm="9">
+                                        <Form.Control
+                                            type="date"
+                                            value={availableAt}
+                                            onChange={(e) =>
+                                                setAvailableAt(e.target.value)
+                                            }
+                                        />
+                                    </Col>
+                                </Form.Group>
+
                                 <Form.Group
                                     as={Row}
                                     className="mb-3"
@@ -240,9 +258,101 @@ function EditCar() {
                                     <Col sm="9">
                                         <Form.Control
                                             type="number"
+                                            placeholder="Capacity"
                                             value={capacity}
+                                            onChange={(e) =>
+                                                setCapacity(e.target.value)
+                                            }
+                                        />
+                                    </Col>
+                                </Form.Group>
+
+                                <Form.Group
+                                    as={Row}
+                                    className="mb-3"
+                                    controlId="description"
+                                >
+                                    <Form.Label column sm={3}>
+                                        Description
+                                    </Form.Label>
+                                    <Col sm="9">
+                                        <Form.Control
+                                            type="text"
+                                            placeholder="input Description"
+                                            value={description}
+                                            onChange={(e) =>
+                                                setDescription(e.target.value)
+                                            }
+                                        />
+                                    </Col>
+                                </Form.Group>
+
+                                <Form.Group
+                                    as={Row}
+                                    className="mb-3"
+                                    controlId="transmission"
+                                >
+                                    <Form.Label column sm={3}>
+                                        Transmission
+                                    </Form.Label>
+                                    <Col sm="9">
+                                        <Form.Control
+                                            type="text"
+                                            placeholder="Transmission Type"
+                                            value={transmission}
+                                            onChange={(e) =>
+                                                setTransmission(e.target.value)
+                                            }
+                                        />
+                                    </Col>
+                                </Form.Group>
+
+                                <Form.Group
+                                    as={Row}
+                                    className="mb-3"
+                                    controlId="type_id"
+                                >
+                                    <Form.Label column sm={3}>
+                                        Type
+                                    </Form.Label>
+                                    <Col sm="9">
+                                        <Form.Select
+                                            aria-label="Default select example"
                                             onChange={(event) =>
-                                                setCapacity(event.target.value)
+                                                setTypeId(event.target.value)
+                                            }
+                                        >
+                                            <option disabled selected>
+                                                Select Type
+                                            </option>
+                                            {types?.length > 0 &&
+                                                types.map((type) => (
+                                                    <option
+                                                        key={type?.id}
+                                                        value={type?.id}
+                                                    >
+                                                        {type?.name}
+                                                    </option>
+                                                ))}
+                                        </Form.Select>
+                                    </Col>
+                                </Form.Group>
+
+                                <Form.Group
+                                    as={Row}
+                                    className="mb-3"
+                                    controlId="year"
+                                >
+                                    <Form.Label column sm={3}>
+                                        Year
+                                    </Form.Label>
+                                    <Col sm="9">
+                                        <Form.Control
+                                            type="number"
+                                            placeholder="Year"
+                                            value={year}
+                                            onChange={(e) =>
+                                                setYear(e.target.value)
                                             }
                                         />
                                     </Col>
@@ -266,129 +376,6 @@ function EditCar() {
                                                 setAvailable(
                                                     event.target.checked
                                                 )
-                                            }
-                                        />
-                                    </Col>
-                                </Form.Group>
-              
-                                <Form.Group
-                                    as={Row}
-                                    className="mb-3"
-                                    controlId="availableAt"
-                                >
-                                    <Form.Label column sm={3}>
-                                        Available From
-                                    </Form.Label>
-                                    <Col sm="9">
-                                        <Form.Control
-                                            type="date"
-                                            value={availableAt}
-                                            onChange={(event) =>
-                                                setAvailableAt(
-                                                    event.target.value
-                                                )
-                                            }
-                                        />
-                                    </Col>
-                                </Form.Group>
-
-                                <Form.Group
-                                    as={Row}
-                                    className="mb-3"
-                                    controlId="transmission"
-                                >
-                                    <Form.Label column sm={3}>
-                                        Transmission
-                                    </Form.Label>
-                                    <Col sm="9">
-                                        <Form.Control
-                                            type="text"
-                                            placeholder="Transmission"
-                                            value={transmission}
-                                            onChange={(event) =>
-                                                setTransmission(
-                                                    event.target.value
-                                                )
-                                            }
-                                        />
-                                    </Col>
-                                </Form.Group>
-                                <Form.Group
-                                    as={Row}
-                                    className="mb-3"
-                                    controlId="transmission"
-                                >
-                                    <Form.Label column sm={3}>
-                                        Transmission
-                                    </Form.Label>
-                                    <Col sm="9">
-                                        <Form.Control
-                                            type="text"
-                                            placeholder="Transmission"
-                                            value={transmission}
-                                            onChange={(event) =>
-                                                setTransmission(
-                                                    event.target.value
-                                                )
-                                            }
-                                        />
-                                    </Col>
-                                </Form.Group>
-
-                                <Form.Group
-                                    as={Row}
-                                    className="mb-3"
-                                    controlId="year"
-                                >
-                                    <Form.Label column sm={3}>
-                                        Year
-                                    </Form.Label>
-                                    <Col sm="9">
-                                        <Form.Control
-                                            type="number"
-                                            value={year}
-                                            onChange={(event) =>
-                                                setYear(event.target.value)
-                                            }
-                                        />
-                                    </Col>
-                                </Form.Group>
-
-                                <Form.Group
-                                    as={Row}
-                                    className="mb-3"
-                                    controlId="options"
-                                >
-                                    <Form.Label column sm={3}>
-                                        Options
-                                    </Form.Label>
-                                    <Col sm="9">
-                                        <Form.Control
-                                            type="text"
-                                            placeholder="Options"
-                                            value={options}
-                                            onChange={(event) =>
-                                                setOptions(event.target.value)
-                                            }
-                                        />
-                                    </Col>
-                                </Form.Group>
-
-                                <Form.Group
-                                    as={Row}
-                                    className="mb-3"
-                                    controlId="specs"
-                                >
-                                    <Form.Label column sm={3}>
-                                        Specs
-                                    </Form.Label>
-                                    <Col sm="9">
-                                        <Form.Control
-                                            type="text"
-                                            placeholder="Specs"
-                                            value={specs}
-                                            onChange={(event) =>
-                                                setSpecs(event.target.value)
                                             }
                                         />
                                     </Col>
@@ -459,18 +446,18 @@ function EditCar() {
                                         </Button>
                                     </Col>
                                 </Form.Group>
-
                                 <Form.Group
                                     as={Row}
                                     className="mb-3"
-                                    controlId="image"
+                                    controlId="logo"
                                 >
                                     <Form.Label column sm={3}>
                                         Image
                                     </Form.Label>
-                                    <Col sm="9">
+                                    <Col sm={9}>
                                         <Form.Control
                                             type="file"
+                                            placeholder="Choose File"
                                             onChange={(event) => {
                                                 setImage(event.target.files[0]);
                                                 setCurrentImage(
@@ -483,22 +470,25 @@ function EditCar() {
                                         />
                                     </Col>
                                 </Form.Group>
-                                <Form.Group as={Row} className="mb-3">
+
+                                <Form.Group
+                                    as={Row}
+                                    className="mb-3"
+                                    controlId="currentLogo"
+                                >
                                     <Form.Label column sm={3}></Form.Label>
                                     <Col sm={9}>
-                                        {currentImage && (
-                                            <Image src={currentImage} fluid />
-                                        )}
+                                        <Image src={currentImage} fluid />
                                     </Col>
                                 </Form.Group>
 
                                 <div className="d-grid gap-2">
                                     <Button
                                         type="submit"
-                                        disabled={updateCarMutation.isPending}
                                         variant="primary"
+                                        disabled={isPending}
                                     >
-                                        Update Car
+                                        Create Car
                                     </Button>
                                 </div>
                             </Form>

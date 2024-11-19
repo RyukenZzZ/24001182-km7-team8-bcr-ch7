@@ -1,68 +1,44 @@
 import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import Protected from "../../../components/Auth/Protected";
+import { createType } from "../../../service/type";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import Form from "react-bootstrap/Form";
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
 import Container from "react-bootstrap/Container";
-import { getTypesById, updateType } from "../../../service/type";
+import { useState } from "react";
 import { toast } from "react-toastify";
-import Protected from "../../../components/Auth/Protected";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 
-export const Route = createLazyFileRoute("/types/edit/$id")({
+export const Route = createLazyFileRoute("/admin/types/create")({
     component: () => (
         <Protected roles={[1]}>
-            <TypeDetail />
+            <CreateType />
         </Protected>
     ),
 });
 
-function TypeDetail() {
-    const navigate = useNavigate();
-    const { id } = Route.useParams();
+function CreateType() {
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
     const [characteristic, setCharacteristic] = useState("");
     const [style, setStyle] = useState("");
+    const navigate = useNavigate();
 
-    const {
-        data: typeData,
-        isPending,
-        isSuccess,
-    } = useQuery({
-        queryKey: ["type", id],
-        queryFn: () => getTypesById(id),
-    });
-
-    useEffect(() => {
-        if (isSuccess) {
-            setName(typeData.name);
-            setDescription(typeData.description);
-            setCharacteristic(typeData.characteristic);
-            setStyle(typeData.style);
-        }
-    }, [typeData, isSuccess]);
-
-    const { mutate: updateTypeData, isPending: updatePending } = useMutation({
-        mutationFn: (body) => updateType(id, body),
+    const { mutate: createTypeData, isPending } = useMutation({
+        mutationFn: (body) => createType(body),
         onSuccess: () => {
-            toast.success("Type updated");
-            navigate({ to: `/types/${id}` });
+            toast.success("New type created");
+            navigate({ to: "/admin/dashboard" });
         },
     });
 
     const onSubmit = async (e) => {
         e.preventDefault();
-        const body = { name, description, characteristic, style };
-
-        updateTypeData(body);
+        const request = { name, description, characteristic, style };
+        createTypeData(request);
     };
-
-    if (isPending) {
-        return <h2>Loading...</h2>;
-    }
 
     return (
         <Container>
@@ -70,7 +46,7 @@ function TypeDetail() {
                 <Col className="offset-md-3">
                     <Card>
                         <Card.Header className="text-center">
-                            Edit Type
+                            Create Type
                         </Card.Header>
                         <Card.Body>
                             <Form onSubmit={onSubmit}>
@@ -105,7 +81,7 @@ function TypeDetail() {
                                     <Col sm="9">
                                         <Form.Control
                                             type="text"
-                                            placeholder="Description"
+                                            placeholder="description"
                                             required
                                             value={description}
                                             onChange={(event) => {
@@ -127,7 +103,8 @@ function TypeDetail() {
                                     <Col sm="9">
                                         <Form.Control
                                             type="text"
-                                            placeholder="Characteristic"
+                                            placeholder="characteristic"
+                                            required
                                             value={characteristic}
                                             onChange={(event) => {
                                                 setCharacteristic(
@@ -137,6 +114,7 @@ function TypeDetail() {
                                         />
                                     </Col>
                                 </Form.Group>
+
                                 <Form.Group
                                     as={Row}
                                     className="mb-3"
@@ -148,7 +126,8 @@ function TypeDetail() {
                                     <Col sm="9">
                                         <Form.Control
                                             type="text"
-                                            placeholder="Style"
+                                            placeholder="style"
+                                            required
                                             value={style}
                                             onChange={(event) => {
                                                 setStyle(event.target.value);
@@ -160,9 +139,9 @@ function TypeDetail() {
                                     <Button
                                         type="submit"
                                         variant="primary"
-                                        disabled={updatePending}
+                                        disabled={isPending}
                                     >
-                                        Edit Type
+                                        Create Type
                                     </Button>
                                 </div>
                             </Form>

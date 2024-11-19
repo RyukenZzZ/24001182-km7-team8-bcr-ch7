@@ -4,43 +4,45 @@ import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
-import { deleteModel, getDetailModel } from "../../service/model";
+import {
+    deleteManufacture,
+    getDetailManufactures,
+} from "../../../service/manufacture";
 import { toast } from "react-toastify";
 import { confirmAlert } from "react-confirm-alert";
 import { useSelector } from "react-redux";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 
-export const Route = createLazyFileRoute("/models/$id")({
-    component: ModelDetail,
+export const Route = createLazyFileRoute("/admin/manufactures/$id")({
+    component: ManufacturesDetail,
 });
 
-function ModelDetail() {
+function ManufacturesDetail() {
     const { id } = Route.useParams();
     const navigate = useNavigate();
     const { user } = useSelector((state) => state.auth);
 
     const {
-        data: model,
+        data: manufacture,
         isLoading,
         isError,
     } = useQuery({
-        queryKey: ["model", id],
-        queryFn: () => getDetailModel(id),
+        queryKey: ["manufacture", id],
+        queryFn: () => getDetailManufactures(id),
         enabled: !!id,
         retry: false,
     });
 
-    const { mutate: deleteModelData } = useMutation({
-        mutationFn: () => deleteModel(id),
+    const { mutate: deleteManufactureData } = useMutation({
+        mutationFn: () => deleteManufacture(id),
         onSuccess: () => {
-            toast.success("Model deleted");
-            navigate({ to: "/" });
+            toast.success("Manufacture deleted");
+            navigate({ to: "/admin/dashboard" });
         },
         onError: () => {
             toast.error("Unable to delete");
         },
     });
-
     if (isLoading) {
         return (
             <Row className="mt-5">
@@ -51,11 +53,11 @@ function ModelDetail() {
         );
     }
 
-    if (isError || !model) {
+    if (isError || !manufacture) {
         return (
             <Row className="mt-5">
                 <Col>
-                    <h1 className="text-center">Model is not found!</h1>
+                    <h1 className="text-center">Manufacture not found!</h1>
                 </Col>
             </Row>
         );
@@ -66,12 +68,12 @@ function ModelDetail() {
 
         confirmAlert({
             title: "Confirm to delete",
-            message: "Are you sure to delete this data?",
+            message: "Are you sure to delete this manufacture?",
             buttons: [
                 {
                     label: "Yes",
                     onClick: () => {
-                        deleteModelData();
+                        deleteManufactureData();
                     },
                 },
                 {
@@ -85,16 +87,18 @@ function ModelDetail() {
     return (
         <Container>
             <Row className="mt-5">
-                <Col className="offset-md-3">
-                    <Card>
+                <Col md={{ span: 6, offset: 3 }}>
+                    <Card className="shadow-sm">
                         <Card.Body>
-                            <Card.Title>Name: {model?.name}</Card.Title>
-                            <Card.Text>
-                                Description: {model?.description}
-                            </Card.Text>
-                            <Card.Text>
-                                Manufacture: {model?.manufactures?.name}
-                            </Card.Text>
+                            <Card.Img
+                                variant="top"
+                                src={manufacture.logo}
+                                alt={manufacture.name || "Logo image"}
+                                style={{ height: "300px", objectFit: "cover" }}
+                            />
+                            <Card.Title>
+                                {manufacture.name || "No name available"}
+                            </Card.Title>
 
                             {user?.role_id === 1 && (
                                 <>
@@ -102,11 +106,11 @@ function ModelDetail() {
                                         <div className="d-grid gap-2">
                                             <Button
                                                 as={Link}
-                                                href={`/models/edit/${id}`}
+                                                href={`/admin/manufactures/edit/${id}`}
                                                 variant="primary"
                                                 size="md"
                                             >
-                                                Edit Model
+                                                Edit Manufacture
                                             </Button>
                                         </div>
                                     </Card.Text>
@@ -117,7 +121,7 @@ function ModelDetail() {
                                                 variant="danger"
                                                 size="md"
                                             >
-                                                Delete Model
+                                                Delete Manufacture
                                             </Button>
                                         </div>
                                     </Card.Text>
@@ -126,8 +130,9 @@ function ModelDetail() {
                         </Card.Body>
                     </Card>
                 </Col>
-                <Col md={3}></Col>
             </Row>
         </Container>
     );
 }
+
+export default ManufacturesDetail;

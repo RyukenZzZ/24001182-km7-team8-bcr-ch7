@@ -6,13 +6,13 @@ import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
-import { getManufactures } from "../../service/manufacture";
-import { createModel } from "../../service/model";
+import { getManufactures } from "../../../service/manufacture";
+import { createModel } from "../../../service/model";
 import { toast } from "react-toastify";
-import Protected from "../../components/Auth/Protected";
+import Protected from "../../../components/Auth/Protected";
 import { useQuery, useMutation } from "@tanstack/react-query";
 
-export const Route = createLazyFileRoute("/models/create")({
+export const Route = createLazyFileRoute("/admin/models/create")({
     component: () => (
         <Protected roles={[1]}>
             <CreateModel />
@@ -36,7 +36,7 @@ function CreateModel() {
         mutationFn: (body) => createModel(body),
         onSuccess: () => {
             toast.success("New model added");
-            navigate({ to: "/" });
+            navigate({ to: "/admin/dashboard" });
         },
     });
 
