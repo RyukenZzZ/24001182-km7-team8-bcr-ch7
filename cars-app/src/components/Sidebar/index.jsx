@@ -3,7 +3,7 @@ import Nav from "react-bootstrap/Nav";
 import { useSelector, useDispatch } from "react-redux";
 import Image from "react-bootstrap/Image";
 import { BiHome, BiCar, BiUser } from "react-icons/bi";
-import "./Sidebar.css";
+import "./sidebar.css";
 import { useCallback } from "react";
 import { setToken, setUser } from "../../redux/slices/auth";
 
