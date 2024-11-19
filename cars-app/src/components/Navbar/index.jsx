@@ -55,7 +55,7 @@ const NavigationBar = () => {
                 <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                 <Navbar.Collapse id="responsive-navbar-nav">
                     <Nav className="me-auto">
-                        <Nav.Link as={Link} to="/">
+                        <Nav.Link as={Link} to="/admin/dashboard">
                             Home
                         </Nav.Link>
                         {user && user?.role_id === 1 && (

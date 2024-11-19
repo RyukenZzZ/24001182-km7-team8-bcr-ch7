@@ -21,22 +21,41 @@ function Login() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const { token } = useSelector((state) => state.auth);
+    const { token,user } = useSelector((state) => state.auth);
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
+
+
     if (token) {
-        navigate({ to: "/" });
+        if (user?.role_id === 2) {
+            navigate({ to: "/" });
+        } else if (user?.role_id === 1) {
+            navigate({ to: "/admin/dashboard" });
+        }
     }
+    
 
     const { mutate: loginUser,isPending } = useMutation({
         mutationFn: (body) => {
             return login(body);
         },
         onSuccess: (data) => {
+            // Save token in state
+            const roleId = data?.user?.role_id;
+
             dispatch(setToken(data?.token));
-            navigate({ to: "/" });
+
+            // Check user role and navigate
+            if (roleId === 1) {
+                console.log("Navigating to Admin Dashboard");
+                navigate({ to: "/admin/dashboard" });
+                return;
+            } else if (roleId === 2){
+                navigate({ to: "/" });
+                return;
+            }
         },
         onError: (error) => {
             toast.error(error?.message);

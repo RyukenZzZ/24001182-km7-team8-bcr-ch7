@@ -29,7 +29,7 @@ function TypeDetail() {
         mutationFn: () => deleteType(id),
         onSuccess: () => {
             toast.success("Type deleted");
-            navigate({ to: "/" });
+            navigate({ to: "/admin/dashboard" });
         },
         onError: () => {
             toast.error("Unable to delete");

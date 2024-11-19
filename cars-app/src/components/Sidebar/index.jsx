@@ -1,17 +1,40 @@
-import { Link, useLocation } from "@tanstack/react-router";
+import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import Nav from "react-bootstrap/Nav";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import Image from "react-bootstrap/Image";
 import { BiHome, BiCar, BiUser } from "react-icons/bi";
 import "./Sidebar.css";
+import { useCallback } from "react";
+import { setToken, setUser } from "../../redux/slices/auth";
+
 
 const Sidebar = () => {
   const { user } = useSelector((state) => state.auth);
   const location = useLocation();
+  const dispatch= useDispatch();
+  const navigate = useNavigate();
+
+
+  const handleLogout = useCallback(() => {
+    // delete the local storage here
+    dispatch(setUser(null));
+    dispatch(setToken(null));
+
+    // redirect to login
+    navigate({ to: "/login" });
+}, [dispatch, navigate]);
+
+
+  const logout = (event) => {
+    event.preventDefault();
+    handleLogout();
+};
+
 
   if (!user || location.pathname === "/login" || location.pathname === "/register") {
     return null;
   }
+
 
   return (
     <div className="sidebar bg-primary d-flex flex-column align-items-center text-white">
@@ -30,7 +53,7 @@ const Sidebar = () => {
       <Nav className="flex-column w-100 text-center">
         {user.role_id === 1 && (
           <Nav.Item>
-            <Nav.Link as={Link} to="/dashboard" className="text-white">
+            <Nav.Link as={Link} to="/admin/dashboard" className="text-white">
               <BiHome className="sidebar-icon" />
               <span className="sidebar-text">Dashboard</span>
             </Nav.Link>
@@ -49,6 +72,9 @@ const Sidebar = () => {
             <BiUser className="sidebar-icon" />
             <span className="sidebar-text">Profile</span>
           </Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+        <Nav.Link onClick={logout} className="text-white">Logout</Nav.Link>
         </Nav.Item>
       </Nav>
     </div>

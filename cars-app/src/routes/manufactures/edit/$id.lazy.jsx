@@ -42,7 +42,7 @@ function EditManufacture() {
             mutationFn: (body) => updateManufacture(id, body),
             onSuccess: () => {
                 toast.success("Manufacture updated");
-                navigate({ to: "/" });
+                navigate({ to: "/admin/dashboard" });
             },
         });
     useEffect(() => {
