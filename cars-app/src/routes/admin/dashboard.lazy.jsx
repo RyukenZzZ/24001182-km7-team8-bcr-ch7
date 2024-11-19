@@ -15,7 +15,6 @@ import TypeCard from '../../components/Type/TypeCard'
 import CarSidebar from '../../components/CarSidebar'
 import { useQuery } from '@tanstack/react-query'
 import { Button } from 'react-bootstrap'
-
 export const Route = createLazyFileRoute('/admin/dashboard')({
   component: ()=>(<div className="d-flex">
     <CarSidebar />
@@ -143,8 +142,8 @@ useEffect(()=>{
 
           {selectedData === 'models' && (
             <div>
-              <div className='d-flex align-items-center mb-3'>
-                <h2 className='px-3'>Models</h2>
+              <div className='d-flex align-items-center justify-content-between px-3 mb-3'>
+                <h2>Models</h2>
                 <Button as={Link} to="/admin/models/create" variant='primary' className='text-white px-2 py-1 ms-2 rounded'>Create New</Button>
               </div>
               {models.length > 0 ? (
@@ -163,8 +162,8 @@ useEffect(()=>{
 
           {selectedData === 'manufactures' && (
             <div>
-              <div className='d-flex align-items-center mb-3'>
-                <h2 className='px-3'>Manufactures</h2>
+              <div className='d-flex align-items-center justify-content-between px-3 mb-3'>
+                <h2>Manufactures</h2>
                 <Button as={Link} to="/admin/manufactures/createManufactures" variant='primary' className='text-white px-2 py-1 ms-2 rounded'>Create New</Button>
               </div>
               {manufactures.length > 0 ? (
@@ -183,8 +182,8 @@ useEffect(()=>{
 
           {selectedData === 'types' && (
             <div>
-              <div className='d-flex align-items-center mb-3'>
-                <h2 className='px-3'>Types</h2>
+              <div className='d-flex align-items-center justify-content-between px-3 mb-3'>
+                <h2>Types</h2>
                 <Button as={Link} to="/admin/types/create" variant='primary' className='text-white px-2 py-1 ms-2 rounded'>Create New</Button>
               </div>
               {types.length > 0 ? (

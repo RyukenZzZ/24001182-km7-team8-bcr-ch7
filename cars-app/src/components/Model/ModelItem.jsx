@@ -12,7 +12,7 @@ import { useSelector } from "react-redux";
 const ModelItem = ({ model }) => {
     const user = useSelector((state) => state.auth.user);
     return (
-        <Col md={3}>
+        <Col md={12} className="mb-4 d-flex justify-content-center">
             <Card style={{ width: "18rem" }}>
                 <Card.Body>
                     <Card.Title>{model?.name}</Card.Title>
